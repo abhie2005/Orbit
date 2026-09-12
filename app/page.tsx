@@ -94,9 +94,9 @@ export default function LandingPage() {
             </div>
 
             <div className="flex justify-center lg:justify-end">
-              <div className="aspect-square w-full max-w-[31rem] overflow-hidden border-2 border-ink bg-[#f4f3f1] brut-shadow">
+              <div className="aspect-square w-full max-w-[31rem] overflow-hidden border-2 border-ink bg-[#0a0908] brut-shadow">
                 <RecursiveErosionBackground
-                  mode="light"
+                  mode="dark"
                   className="h-full w-full"
                 />
               </div>
