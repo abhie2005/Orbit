@@ -139,7 +139,6 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | Layout tuned to 130px minimum separation | Measured, not guessed — `check-logic.ts` fails the build if nodes get closer. |
 | Dev port pinned to 3210 | Port 3000 was already taken on this machine and Next silently migrated between ports mid-session. "Which port is it on?" is not a question to answer mid-demo. |
 | React Flow attribution left visible | Hiding it requires a Pro licence. Not worth it for a hackathon. |
-
 | `read()` persists without notifying listeners | `read` is the `getSnapshot` for `useSyncExternalStore` and runs during render. The original version called `write()` there, which notified subscribers mid-render and produced a React "state update on a component that hasn't mounted yet" warning. Seeding now uses `persist()` (localStorage only, no notify). |
 
 ## 8. Blockers
@@ -153,9 +152,6 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 > If you switch to Codex, **stop the Claude session first** (or give each agent
 > its own `git worktree` and merge). Everything is committed, so `git log` is the
 > recovery path.
-
-
-*(none)*
 
 ## 9. Demo script (spec §18) — mapped to real UI
 
