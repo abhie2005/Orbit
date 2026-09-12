@@ -1,8 +1,10 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { useId, useState } from "react";
+import { toJpeg } from "html-to-image";
+import { useId, useRef, useState, type RefObject } from "react";
 import { OrbitAvatar } from "@/components/passport/orbit-avatar";
+import { Button } from "@/components/ui/primitives";
 import { serialFor } from "@/lib/passport";
 import { MEETING_PREFERENCE_LABELS, PROJECT_ROLE_LABELS } from "@/lib/questions";
 import type { Classroom, Passport } from "@/lib/types";
@@ -29,9 +31,51 @@ export function PassportCard({
 }) {
   const reduceMotion = useReducedMotion();
   const [face, setFace] = useState<"front" | "back">("front");
+  const [downloadState, setDownloadState] = useState<"idle" | "saving" | "error">("idle");
+  const frontRef = useRef<HTMLElement>(null);
+  const backRef = useRef<HTMLElement>(null);
   const titleId = useId();
-  const { student, features } = passport;
+  const { student } = passport;
   const serial = serialFor(student, classroom.courseCode);
+
+  async function downloadPassport(): Promise<void> {
+    const front = frontRef.current;
+    const back = backRef.current;
+    if (!front || !back || downloadState === "saving") return;
+
+    setDownloadState("saving");
+    try {
+      await document.fonts.ready;
+      const imageOptions = {
+        backgroundColor: "#fbf7ef",
+        cacheBust: true,
+        pixelRatio: 3,
+        quality: 0.96,
+      } as const;
+      const [frontDataUrl, backDataUrl] = await Promise.all([
+        toJpeg(front, imageOptions),
+        toJpeg(back, imageOptions),
+      ]);
+      const safeName = student.displayName
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") || "student";
+      for (const [side, dataUrl] of [
+        ["front", frontDataUrl],
+        ["back", backDataUrl],
+      ] as const) {
+        const link = document.createElement("a");
+        link.download = `orbit-passport-${safeName}-${side}.jpeg`;
+        link.href = dataUrl;
+        link.click();
+      }
+      setDownloadState("idle");
+    } catch (error) {
+      console.error("Unable to download passport", error);
+      setDownloadState("error");
+    }
+  }
 
   return (
     <div className="w-full">
@@ -43,6 +87,7 @@ export function PassportCard({
         >
           <div className="passport-face">
             <PassportFront
+              captureRef={frontRef}
               passport={passport}
               classroom={classroom}
               serial={serial}
@@ -57,12 +102,25 @@ export function PassportCard({
             className="passport-face passport-face-back absolute inset-0"
             aria-hidden={face === "front"}
           >
-            <PassportBack passport={passport} classroom={classroom} serial={serial} />
+            <PassportBack
+              captureRef={backRef}
+              passport={passport}
+              classroom={classroom}
+              serial={serial}
+            />
           </div>
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between gap-3">
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <Button
+          type="button"
+          onClick={() => void downloadPassport()}
+          disabled={downloadState === "saving"}
+          aria-describedby={downloadState === "error" ? `${titleId}-download-error` : undefined}
+        >
+          {downloadState === "saving" ? "Creating JPEGs…" : "Download passport (front + back)"}
+        </Button>
         <button
           type="button"
           onClick={() => setFace(face === "front" ? "back" : "front")}
@@ -70,8 +128,13 @@ export function PassportCard({
         >
           {face === "front" ? "Turn the card over →" : "← Back to the front"}
         </button>
-        <p className="font-mono text-[0.65rem] tracking-[0.14em] text-muted">{serial}</p>
+        <p className="ml-auto font-mono text-[0.65rem] tracking-[0.14em] text-muted">{serial}</p>
       </div>
+      {downloadState === "error" ? (
+        <p id={`${titleId}-download-error`} role="alert" className="mt-2 text-sm text-[color:var(--paper-red)]">
+          We couldn&apos;t create the passport images. Please try again.
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -79,6 +142,7 @@ export function PassportCard({
 /* -------------------------------------------------------------------------- */
 
 function PassportFront({
+  captureRef,
   passport,
   classroom,
   serial,
@@ -86,6 +150,7 @@ function PassportFront({
   reduceMotion,
   titleId,
 }: {
+  captureRef: RefObject<HTMLElement | null>;
   passport: Passport;
   classroom: Classroom;
   serial: string;
@@ -107,6 +172,7 @@ function PassportFront({
 
   return (
     <article
+      ref={captureRef}
       aria-labelledby={titleId}
       className="passport relative overflow-hidden rounded-none p-3 brut-shadow sm:p-4"
     >
@@ -245,17 +311,23 @@ function PassportFront({
           </div>
         </div>
 
-        {/* Rubber stamp */}
+        {/* Hackathon credential stamp, based on the event flyer. */}
         <motion.div
           initial={reveal && !reduceMotion ? { scale: 2.2, opacity: 0 } : false}
           animate={{ scale: 1, opacity: 0.34 }}
           transition={{ delay: 0.75, duration: 0.35, ease: [0.34, 1.4, 0.64, 1] }}
-          className="passport-stamp pointer-events-none absolute bottom-5 left-6 z-10 flex h-[4.6rem] w-[4.6rem] items-center justify-center text-center text-[0.46rem] font-bold leading-tight sm:h-20 sm:w-20 sm:text-[0.52rem]"
+          className="passport-stamp pointer-events-none absolute bottom-5 left-6 z-10 flex h-[5rem] w-[5rem] flex-col items-center justify-center text-center leading-none sm:h-[5.4rem] sm:w-[5.4rem]"
           aria-hidden="true"
         >
-          ISSUED
-          <br />
-          {classroom.semester.toUpperCase()}
+          <span className="text-[0.38rem] font-semibold tracking-[0.12em] sm:text-[0.41rem]">
+            AI EDUCATION
+          </span>
+          <span className="my-1 border-y border-current py-1 text-[0.47rem] font-black tracking-[0.05em] sm:text-[0.5rem]">
+            HACKATHON
+          </span>
+          <span className="text-[0.4rem] font-bold tracking-[0.16em] sm:text-[0.43rem]">
+            BUILDER
+          </span>
         </motion.div>
       </div>
     </article>
@@ -265,10 +337,12 @@ function PassportFront({
 /* -------------------------------------------------------------------------- */
 
 function PassportBack({
+  captureRef,
   passport,
   classroom,
   serial,
 }: {
+  captureRef: RefObject<HTMLElement | null>;
   passport: Passport;
   classroom: Classroom;
   serial: string;
@@ -276,7 +350,7 @@ function PassportBack({
   const { features } = passport;
 
   return (
-    <article className="passport relative h-full overflow-hidden rounded-none p-3 brut-shadow sm:p-4">
+    <article ref={captureRef} className="passport relative h-full overflow-hidden rounded-none p-3 brut-shadow sm:p-4">
       <span className="passport-cut" aria-hidden="true" />
 
       <div className="relative flex h-full flex-col p-3 sm:p-4">
