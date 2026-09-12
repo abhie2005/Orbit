@@ -314,20 +314,39 @@ function PassportFront({
         {/* Hackathon credential stamp, based on the event flyer. */}
         <motion.div
           initial={reveal && !reduceMotion ? { scale: 2.2, opacity: 0 } : false}
-          animate={{ scale: 1, opacity: 0.34 }}
+          animate={{ scale: 1, opacity: 0.46 }}
           transition={{ delay: 0.75, duration: 0.35, ease: [0.34, 1.4, 0.64, 1] }}
-          className="passport-stamp pointer-events-none absolute bottom-5 left-6 z-10 flex h-[5rem] w-[5rem] flex-col items-center justify-center text-center leading-none sm:h-[5.4rem] sm:w-[5.4rem]"
+          className="passport-stamp pointer-events-none absolute bottom-5 left-5 z-10 flex h-[4.7rem] w-[9.2rem] flex-col justify-between px-3 py-2 text-center leading-none sm:w-[9.8rem]"
           aria-hidden="true"
         >
-          <span className="text-[0.38rem] font-semibold tracking-[0.12em] sm:text-[0.41rem]">
-            AI EDUCATION
-          </span>
-          <span className="my-1 border-y border-current py-1 text-[0.47rem] font-black tracking-[0.05em] sm:text-[0.5rem]">
-            HACKATHON
-          </span>
-          <span className="text-[0.4rem] font-bold tracking-[0.16em] sm:text-[0.43rem]">
-            BUILDER
-          </span>
+          <div className="flex items-center justify-between gap-2 border-b border-current pb-1 text-[0.34rem] font-bold tracking-[0.14em]">
+            <span>AI EDUCATION</span>
+            <span>ENTRY 26</span>
+          </div>
+
+          <div className="flex items-center justify-center gap-2">
+            <svg
+              className="h-4 w-4 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-24 12 12)" />
+              <circle cx="20" cy="8" r="1.3" fill="currentColor" stroke="none" />
+            </svg>
+            <span className="text-[0.76rem] font-black tracking-[0.055em] sm:text-[0.82rem]">
+              HACKATHON
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between gap-2 border-t border-current pt-1 text-[0.34rem] font-bold tracking-[0.13em]">
+            <span>BUILDER</span>
+            <span>◆</span>
+            <span>ADMITTED</span>
+          </div>
         </motion.div>
       </div>
     </article>

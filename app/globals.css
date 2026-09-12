@@ -257,23 +257,25 @@ body {
   white-space: nowrap;
 }
 
-/* "CERTIFIED"-style rubber stamp, rotated and faded like real ink. */
+/* Rectangular entry stamp, worn and skewed like ink pressed into paper. */
 .passport-stamp {
   border: 2px solid var(--paper-blue);
   color: var(--paper-blue);
-  border-radius: 999px;
-  opacity: 0.34;
-  transform: rotate(-16deg);
+  border-radius: 2px;
+  transform: rotate(-7deg) skewX(-1deg);
   font-family: var(--font-mono);
-  letter-spacing: 0.18em;
   mix-blend-mode: multiply;
+  box-shadow:
+    inset 0 0 0 2px var(--paper),
+    inset 0 0 0 3px var(--paper-blue);
+  filter: contrast(0.92);
 }
 .passport-stamp::after {
   content: "";
   position: absolute;
-  inset: 4px;
+  inset: 5px;
   border: 1px dashed currentColor;
-  border-radius: inherit;
+  opacity: 0.72;
 }
 
 /* Barcode drawn with a repeating gradient — no image asset needed. */
