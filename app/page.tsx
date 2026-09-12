@@ -1,5 +1,5 @@
 import { ButtonLink, Card, SectionLabel } from "@/components/ui/primitives";
-import { HeroConstellation } from "@/components/ui/hero-constellation";
+import RecursiveErosionBackground from "@/components/ui/recursive-erosion";
 import { SiteHeader } from "@/components/ui/site-header";
 import { WordReveal } from "@/components/ui/word-reveal";
 import { DEMO_CLASSROOM } from "@/lib/seed-data";
@@ -94,7 +94,12 @@ export default function LandingPage() {
             </div>
 
             <div className="flex justify-center lg:justify-end">
-              <HeroConstellation />
+              <div className="aspect-square w-full max-w-[31rem] overflow-hidden border-2 border-ink bg-[#f4f3f1] brut-shadow">
+                <RecursiveErosionBackground
+                  mode="light"
+                  className="h-full w-full"
+                />
+              </div>
             </div>
           </div>
         </section>
