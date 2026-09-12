@@ -72,7 +72,7 @@ export function StudentNode({ data, selected }: NodeProps<StudentNode>) {
           React Flow's measured size matches the circle it is meant to centre. */}
       <span
         data-orbit-label
-        className="pointer-events-none absolute left-1/2 top-full mt-2.5 -translate-x-1/2 whitespace-nowrap border-2 border-ink bg-surface px-2 py-0.5 text-xs font-bold text-ink"
+        className="pointer-events-none absolute left-1/2 top-full mt-2.5 max-w-[9rem] -translate-x-1/2 truncate border-2 border-ink bg-surface px-2 py-0.5 text-xs font-bold text-ink"
       >
         {passport.student.displayName}
         {isCurrent ? <span className="text-amber"> · you</span> : null}

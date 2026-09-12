@@ -13,7 +13,7 @@ import {
   type OnNodeDrag,
   type NodeMouseHandler,
 } from "@xyflow/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ConnectionEdge as ConnectionEdgeComponent } from "./connection-edge";
 import { CATEGORY_GLYPH, type ConnectionEdge, type StudentNode } from "./graph-types";
 import { NODE_SIZE, StudentNode as StudentNodeComponent } from "./student-node";
@@ -207,6 +207,18 @@ function GraphInner({
     (_e, node) => physics.onDragStop(node.id),
     [physics],
   );
+
+  /**
+   * Let the springs relax the graph once on arrival. The one-shot layout gets
+   * the topology right but packs newly joined students too close; the physics
+   * equilibrium is measurably better spaced.
+   */
+  const settledRef = useRef(false);
+  useEffect(() => {
+    if (settledRef.current || nodes.length === 0) return;
+    settledRef.current = true;
+    physics.settle();
+  }, [nodes.length, physics]);
 
   const handleNodeEnter: NodeMouseHandler<StudentNode> = useCallback(
     (_event, node) => setHoveredId(node.id),

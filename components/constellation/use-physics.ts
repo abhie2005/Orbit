@@ -156,6 +156,8 @@ export function usePhysics({
   /** Nudge everything so a fresh graph settles into its springs on arrival. */
   const settle = useCallback(() => {
     if (!enabled) return;
+    // The loop stops on a deadline measured from the last release, so seed it.
+    releasedAtRef.current = performance.now();
     run();
   }, [enabled, run]);
 

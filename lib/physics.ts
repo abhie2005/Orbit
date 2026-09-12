@@ -32,18 +32,21 @@ export type Link = {
 
 export const PHYSICS = {
   /** How hard a link pulls. Scaled per-link by `strength`. */
-  springBase: 0.055,
+  springBase: 0.042,
   /** Natural separation for a link at full strength. */
-  restLength: 150,
+  restLength: 265,
   /** Weak bonds want to sit further apart than strong ones. */
-  restSpread: 120,
-  /** Keeps discs from overlapping. Short range only. */
-  repulsion: 9000,
-  repulsionRadius: 130,
+  restSpread: 150,
+  /**
+   * Keeps discs — and their name labels — apart. The radius has to clear the
+   * label chip under each node, not just the 52px disc, or long names collide.
+   */
+  repulsion: 42000,
+  repulsionRadius: 265,
   /** Low damping is what makes it read as zero-g rather than syrup. */
   damping: 0.90,
   /** Very weak pull home so a flung cluster eventually returns on screen. */
-  homing: 0.0024,
+  homing: 0.0007,
   maxSpeed: 18,
 } as const;
 

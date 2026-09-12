@@ -17,19 +17,19 @@ export type Point = { x: number; y: number };
 // give a ~130px minimum node separation, so name labels never sit close enough
 // to another student to look like they belong to them.
 const ITERATIONS = 420;
-const REPULSION = 150000;
+const REPULSION = 260000;
 const SPRING = 0.0075;
-const IDEAL_LENGTH = 300;
+const IDEAL_LENGTH = 340;
 const DAMPING = 0.86;
-const CENTER_PULL = 0.0016;
+const CENTER_PULL = 0.0010;
 
 export function layoutConstellation(
   nodes: readonly LayoutNode[],
   edges: readonly LayoutEdge[],
   options: { width?: number; height?: number } = {},
 ): Record<string, Point> {
-  const width = options.width ?? 1300;
-  const height = options.height ?? 900;
+  const width = options.width ?? 1700;
+  const height = options.height ?? 1150;
   const cx = width / 2;
   const cy = height / 2;
 
