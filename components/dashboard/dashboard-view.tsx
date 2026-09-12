@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { BarList } from "./bar-list";
+import { AssignmentPlanner } from "./assignment-planner";
 import { BridgePanel } from "./bridge-panel";
 import { PulsePanel } from "./pulse-panel";
 import { StatTile } from "./stat-tile";
@@ -132,6 +133,9 @@ export function DashboardView() {
 
       <div className="mt-4 grid gap-4">
         <BridgePanel students={state.students} connections={state.connections} />
+        <div className="mt-5">
+          <AssignmentPlanner />
+        </div>
         <PulsePanel
           before={insights.pulseBefore}
           after={insights.pulseAfter}

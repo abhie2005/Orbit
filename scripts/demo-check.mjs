@@ -34,6 +34,13 @@ check("Dashboard shows aggregate insights",
 check("Dashboard never shows a per-student connection count",
   !/\b\d+\s+connections\b/i.test(dashText));
 
+// Baseline: how big is the seeded class before anyone joins? Derived rather
+// than hardcoded so growing the class does not fail the demo check.
+await page.goto(`${BASE}/constellation`, { waitUntil: "networkidle" });
+await page.waitForTimeout(1800);
+const SEEDED = await page.locator(".react-flow__node").count();
+check("Seeded class renders before anyone joins", SEEDED > 0, `${SEEDED} students`);
+
 // --- 2. Student joins with a code and answers six questions ----------------
 await page.goto(`${BASE}/join`, { waitUntil: "networkidle" });
 await page.fill("#join-code", "ORBIT7");
@@ -83,7 +90,7 @@ await page.waitForTimeout(2400);
 const nodeLabels = (await page.locator(".react-flow__node").allInnerTexts()).join(" ");
 check("The new student's node is in the constellation", nodeLabels.includes("Riya"));
 const nodeCount = await page.locator(".react-flow__node").count();
-check("All 13 students are rendered", nodeCount === 13, `${nodeCount} nodes`);
+check(`All ${SEEDED + 1} students are rendered`, nodeCount === SEEDED + 1, `${nodeCount} nodes`);
 
 // Equal node size is a product invariant — verify it, don't assume it.
 const sizes = await page.evaluate(() =>
@@ -134,7 +141,7 @@ await page.waitForURL(`${BASE}/`);
 await page.goto(`${BASE}/constellation`, { waitUntil: "networkidle" });
 await page.waitForTimeout(2000);
 const afterReset = await page.locator(".react-flow__node").count();
-check("Demo reset returns to the pristine 12-student class", afterReset === 12, `${afterReset} nodes`);
+check(`Demo reset returns to the pristine ${SEEDED}-student class`, afterReset === SEEDED, `${afterReset} nodes`);
 
 check("No console or page errors during the whole run",
   errors.length === 0, errors.slice(0, 3).join(" | "));

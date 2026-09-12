@@ -8,7 +8,10 @@
 
 import assert from "node:assert/strict";
 import { buildConstellation, explainReasons, scorePair } from "../lib/matching";
-import { DEMO_CLASSROOM, SEED_STUDENTS, seedFeatures } from "../lib/seed-data";
+import { DEMO_CLASSROOM, SEED_STUDENTS, seedFeatures, type StudentRecord } from "../lib/seed-data";
+import { deriveFeatures } from "../lib/privacy";
+
+const deriveFeaturesForCheck = (r: StudentRecord) => deriveFeatures(r.answers);
 
 const features = seedFeatures();
 const names = Object.fromEntries(
@@ -168,3 +171,52 @@ for (const record of SEED_STUDENTS) {
 console.log(`  all ${SEED_STUDENTS.length} seeded students are on-palette`);
 
 console.log("\n✅ passport legibility checks passed\n");
+
+// ---- assistant -------------------------------------------------------------
+
+import { answerStudentQuestion, extractSkills, planAssignmentGroups } from "../lib/assistant";
+
+const assistantCtx = {
+  students: SEED_STUDENTS,
+  connections,
+  currentStudentId: "stu_abhi" as string | null,
+};
+
+assert.deepEqual(extractSkills("I need help with react and sql").sort(), [
+  "Databases",
+  "Frontend Development",
+]);
+assert.ok(extractSkills("who knows machine learning?").includes("Machine Learning"));
+
+const helpAnswer = answerStudentQuestion("whom should I reach out to for frontend?", assistantCtx);
+console.log("\nQ: whom should I reach out to for frontend?");
+console.log("  " + helpAnswer.text);
+for (const p of helpAnswer.people.slice(0, 3)) console.log(`   - ${p.name}: ${p.why}`);
+assert.ok(helpAnswer.people.length > 0, "frontend question must name someone");
+// Grounded: everyone named must actually offer the skill.
+for (const person of helpAnswer.people) {
+  const rec = SEED_STUDENTS.find((r) => r.student.id === person.id)!;
+  assert.ok(
+    deriveFeaturesForCheck(rec).skillsOffered.includes("Frontend Development"),
+    `${person.name} was named but does not offer Frontend Development`,
+  );
+}
+assert.ok(
+  helpAnswer.people.every((p) => p.id !== "stu_abhi"),
+  "the assistant must never suggest the asker",
+);
+
+const plan = planAssignmentGroups(
+  "Build a React dashboard backed by Postgres. Teams must present findings.",
+  assistantCtx,
+  { groupSize: 4 },
+);
+console.log("\nAssignment brief -> skills:", plan.skills.join(", "));
+console.log("  groups:", plan.groups.length);
+assert.ok(plan.skills.includes("Frontend Development"), "brief should yield Frontend Development");
+assert.ok(plan.skills.includes("Databases"), "brief should yield Databases");
+assert.ok(plan.groups.length > 0, "assignment must produce groups");
+const grouped = new Set(plan.groups.flatMap((g) => g.memberIds));
+assert.equal(grouped.size, SEED_STUDENTS.length, "every student must be placed in a group");
+
+console.log("\n✅ assistant checks passed\n");

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { AssistantChat } from "@/components/chat/assistant-chat";
 import { ConstellationGraph } from "./graph";
 import { Legend } from "./legend";
 import { ListView } from "./list-view";
@@ -13,7 +14,7 @@ import { PROJECT_ROLE_LABELS } from "@/lib/questions";
 import { useOrbit } from "@/lib/store";
 import { CATEGORY_GLYPH } from "./graph-types";
 
-type ViewMode = "graph" | "list";
+type ViewMode = "graph" | "list" | "ask";
 
 export function ConstellationView() {
   const state = useOrbit();
@@ -92,19 +93,19 @@ export function ConstellationView() {
           <div
             role="tablist"
             aria-label="Constellation view mode"
-            className="flex rounded-none border-2 border-ink bg-surface-2 p-1"
+            className="flex min-w-0 rounded-none border-2 border-ink bg-surface-2 p-1"
           >
-            {(["graph", "list"] as const).map((value) => (
+            {(["graph", "list", "ask"] as const).map((value) => (
               <button
                 key={value}
                 role="tab"
                 aria-selected={mode === value}
                 onClick={() => setMode(value)}
-                className={`rounded-none px-4 py-1.5 text-sm transition-colors ${
+                className={`shrink-0 rounded-none px-2.5 py-1.5 text-xs transition-colors sm:px-4 sm:text-sm ${
                   mode === value ? "bg-wine text-white" : "text-muted hover:text-ink"
                 }`}
               >
-                {value === "graph" ? "Constellation" : "List"}
+                {value === "graph" ? "Constellation" : value === "list" ? "List" : "Ask Orbit"}
               </button>
             ))}
           </div>
@@ -156,6 +157,13 @@ export function ConstellationView() {
                   <span className="font-mono text-blue">{state.classroom.joinCode}</span>.
                 </p>
               </div>
+            ) : mode === "ask" ? (
+              <AssistantChat
+                onFocusStudent={(id) => {
+                  setSelectedStudentId(id);
+                  setMode("graph");
+                }}
+              />
             ) : mode === "graph" ? (
               <ConstellationGraph
                 students={state.students}
@@ -180,9 +188,12 @@ export function ConstellationView() {
             )}
           </div>
 
-          <div className="border-t-2 border-ink px-5 py-3.5">
-            <Legend />
-          </div>
+          {/* The edge legend is meaningless outside the graph and list views. */}
+          {mode === "ask" ? null : (
+            <div className="border-t-2 border-ink px-5 py-3.5">
+              <Legend />
+            </div>
+          )}
         </Card>
 
         <aside className="space-y-4">

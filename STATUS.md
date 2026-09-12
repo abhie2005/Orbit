@@ -1,7 +1,7 @@
 # Orbit — Build Status
 
 **Last updated:** 2026-09-12 — session 1 (Claude Code)
-**Phase:** M7 — feature-complete; brutalist paper theme + Caesura/Peristiva type system
+**Phase:** M7 — feature-complete; 24 students, zero-g graph, grounded assistant
 **Demo runnable:** ✅ end to end, verified by script
 **Build passing:** ✅ `npm run verify`
 **Demo path passing:** ✅ `npm run check:demo` — **15/15**
@@ -86,6 +86,8 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | `lib/matching.ts` | `scorePair`, `buildConstellation`, `rankSuggestionsFor`, `explainReasons` |
 | `lib/grouping.ts` | `bridgeTheClass` greedy grouping + rationale strings |
 | `lib/missions.ts` | Templated conversation starters — deterministic, no LLM needed |
+| `lib/assistant.ts` | Grounded Q&A + assignment→groups. No model call, no API key. |
+| `lib/physics.ts` | Zero-gravity spring simulation for the constellation |
 | `lib/insights.ts` | Aggregate-only professor stats (deliberately has no "isolated students" function) |
 | `lib/layout.ts` | Deterministic force layout for the constellation |
 | `lib/passport.ts` | Deterministic passport visuals derived from student id |

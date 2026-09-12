@@ -29,6 +29,12 @@ export type BridgeOptions = {
   recentPairs?: ReadonlySet<string>;
   /** Students who opted out of grouping. */
   excludeIds?: ReadonlySet<string>;
+  /**
+   * Skills an assignment brief actually asks for. Candidates who can cover a
+   * skill still missing from a group get pulled in first, so each group can
+   * genuinely do the work rather than just look balanced.
+   */
+  prioritySkills?: ReadonlySet<string>;
 };
 
 type Named = Scorable & { displayName: string };
@@ -41,6 +47,7 @@ export function bridgeTheClass(
   const degrees = options.confirmedDegree ?? {};
   const recent = options.recentPairs ?? new Set<string>();
   const excluded = options.excludeIds ?? new Set<string>();
+  const priority = options.prioritySkills ?? new Set<string>();
 
   const pool = students.filter((s) => !excluded.has(s.id));
   const byId = new Map(pool.map((s) => [s.id, s]));
@@ -67,7 +74,7 @@ export function bridgeTheClass(
 
       let best: { student: Named; value: number } | null = null;
       for (const candidate of candidates) {
-        const value = candidateValue(candidate, members, recent, degrees);
+        const value = candidateValue(candidate, members, recent, degrees, priority);
         if (!best || value > best.value || (value === best.value && candidate.id < best.student.id)) {
           best = { student: candidate, value };
         }
@@ -99,6 +106,7 @@ function candidateValue(
   members: readonly Named[],
   recent: ReadonlySet<string>,
   degrees: Record<string, number>,
+  prioritySkills: ReadonlySet<string> = new Set(),
 ): number {
   let total = 0;
   for (const member of members) {
@@ -119,6 +127,15 @@ function candidateValue(
   const offered = new Set(members.flatMap((m) => m.features.skillsOffered));
   if (candidate.features.skillsOffered.some((s) => wanted.has(s))) total += 2;
   if (candidate.features.skillsWanted.some((s) => offered.has(s))) total += 2;
+
+  // Cover a required skill the group is still missing.
+  if (prioritySkills.size > 0) {
+    const alreadyCovered = new Set(members.flatMap((m) => m.features.skillsOffered));
+    const brings = candidate.features.skillsOffered.filter(
+      (s) => prioritySkills.has(s) && !alreadyCovered.has(s),
+    );
+    total += brings.length * 6;
+  }
 
   // Prefer students who have not made a confirmed introduction yet.
   if ((degrees[candidate.id] ?? 0) === 0) total += 2.5;
