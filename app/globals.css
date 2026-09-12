@@ -166,3 +166,121 @@ body {
   --chart-4: #0e9f6e; /* green  */
   --chart-track: #1b2138;
 }
+
+/* ---------------------------------------------------------------------------
+   Passport — a paper ID card.
+
+   Deliberately the one light surface in Orbit. It is a physical artefact the
+   student "receives", so it reads as printed card stock against the night sky.
+   These tokens are local to the passport and must not leak into app chrome.
+--------------------------------------------------------------------------- */
+
+@theme {
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  --font-spray: var(--font-spray), var(--font-display), sans-serif;
+  --font-hand: var(--font-hand), ui-rounded, cursive;
+}
+
+.passport {
+  --paper: #f3ede1;
+  --paper-shade: #e7dece;
+  --paper-ink: #15161a;
+  --paper-rule: #15161a;
+  --paper-red: #c0392b;
+  --paper-blue: #3b6bd6;
+  --paper-faint: #6b6558;
+
+  color: var(--paper-ink);
+  background-color: var(--paper);
+  /* Faint blotched paper grain so the card does not read as flat CSS. */
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(0, 0, 0, 0.035) 0 22%, transparent 60%),
+    radial-gradient(circle at 82% 74%, rgba(0, 0, 0, 0.03) 0 26%, transparent 62%),
+    radial-gradient(circle at 55% 48%, rgba(255, 255, 255, 0.5) 0 40%, transparent 70%);
+}
+
+/* The dashed cut-line that runs inside the card edge. */
+.passport-cut {
+  position: absolute;
+  inset: 9px;
+  border: 1.5px dashed rgba(21, 22, 26, 0.55);
+  border-radius: 0.5rem;
+  pointer-events: none;
+}
+
+/* Boxed form field with a hairline rule, as on a real ID. */
+.passport-field {
+  border: 1px solid var(--paper-rule);
+  padding: 0.25rem 0.5rem 0.3rem;
+  min-width: 0;
+}
+.passport-label {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.08em;
+  color: var(--paper-faint);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.passport-value {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* "CERTIFIED"-style rubber stamp, rotated and faded like real ink. */
+.passport-stamp {
+  border: 2px solid var(--paper-blue);
+  color: var(--paper-blue);
+  border-radius: 999px;
+  opacity: 0.34;
+  transform: rotate(-16deg);
+  font-family: var(--font-mono);
+  letter-spacing: 0.18em;
+  mix-blend-mode: multiply;
+}
+
+/* Barcode drawn with a repeating gradient — no image asset needed. */
+.passport-barcode {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--paper-ink) 0 1px,
+    transparent 1px 3px,
+    var(--paper-ink) 3px 5px,
+    transparent 5px 6px,
+    var(--paper-ink) 6px 9px,
+    transparent 9px 11px
+  );
+}
+
+/* Sticker-style interest stamps, tilted like they were slapped on. */
+.passport-sticker {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border: 1.5px solid var(--paper-ink);
+  box-shadow: 1.5px 1.5px 0 var(--paper-ink);
+}
+
+/* Card flip. Gated on prefers-reduced-motion by the reduced-motion block above,
+   which zeroes the transition duration. */
+.passport-flip {
+  transform-style: preserve-3d;
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.passport-flip[data-face="back"] {
+  transform: rotateY(180deg);
+}
+.passport-face {
+  backface-visibility: hidden;
+}
+.passport-face-back {
+  transform: rotateY(180deg);
+}
