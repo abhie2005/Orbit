@@ -16,6 +16,21 @@ import type { ProjectRole, Question, QuestionKey } from "@/lib/types";
 
 type Answers = Partial<Record<QuestionKey, string[]>>;
 
+const TEST_STUDENT_PRESET: Answers = {
+  academicInterests: ["Machine Learning", "Web Development", "Entrepreneurship"],
+  skillsOffered: ["Frontend Development", "UI/UX Design"],
+  skillsWanted: ["Python", "Machine Learning"],
+  hobbies: ["Gaming", "Coffee", "Photography"],
+  projectRoles: ["builder"],
+  meetingPreference: ["either"],
+  movieGenres: ["Science Fiction", "Comedy"],
+  musicGenres: ["Indie", "Hip Hop"],
+  sports: ["Basketball"],
+  languages: ["Spanish"],
+  home: ["Atlanta, USA"],
+  conversationStarter: ["Ask me what I am building at the hackathon."],
+};
+
 export function OnboardingFlow() {
   const router = useRouter();
   const { classroom } = useOrbit();
@@ -47,6 +62,14 @@ export function OnboardingFlow() {
   function finish() {
     upsertCurrentStudent({ displayName, pronouns, answers });
     router.push("/passport");
+  }
+
+  function applyTestPreset() {
+    setDisplayName("Test Student");
+    setPronouns("they/them");
+    setAnswers(TEST_STUDENT_PRESET);
+    setIncludeBonus(true);
+    setStep(CORE_QUESTIONS.length + BONUS_QUESTIONS.length + 1);
   }
 
   const transition = reduceMotion
@@ -95,6 +118,7 @@ export function OnboardingFlow() {
               pronouns={pronouns}
               onName={setDisplayName}
               onPronouns={setPronouns}
+              onUseTestPreset={applyTestPreset}
             />
           ) : question ? (
             <QuestionStep
@@ -162,11 +186,13 @@ function IdentityStep({
   pronouns,
   onName,
   onPronouns,
+  onUseTestPreset,
 }: {
   displayName: string;
   pronouns: string;
   onName: (v: string) => void;
   onPronouns: (v: string) => void;
+  onUseTestPreset: () => void;
 }) {
   return (
     <div>
@@ -206,6 +232,20 @@ function IdentityStep({
             className="mt-2 w-full rounded-none border-2 border-ink bg-surface-2 px-4 py-3.5 text-ink placeholder:text-muted/40"
           />
         </div>
+      </div>
+
+      <div className="mt-7 border-t border-dashed border-ink/50 pt-5">
+        <p className="text-xs leading-relaxed text-muted">
+          Testing the demo? Load a complete fictional profile and jump to review.
+        </p>
+        <Button
+          type="button"
+          variant="secondary"
+          className="mt-3 w-full text-sm"
+          onClick={onUseTestPreset}
+        >
+          Use test student preset
+        </Button>
       </div>
     </div>
   );

@@ -63,6 +63,7 @@ passport as a self-contained HTML artifact.
 - [x] Full flow demoable in under 3 minutes with no manual data edits
 - [x] Demo reset button works repeatably
 - [x] Student can download both sides of their passport as high-resolution JPEGs
+- [x] Onboarding includes a fictional test-student preset for fast demo setup
 
 Extra invariants the script also asserts:
 - [x] Every graph node is exactly the same pixel size
@@ -170,6 +171,7 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | `read()` persists without notifying listeners | `read` is the `getSnapshot` for `useSyncExternalStore` and runs during render. The original version called `write()` there, which notified subscribers mid-render and produced a React "state update on a component that hasn't mounted yet" warning. Seeding now uses `persist()` (localStorage only, no notify). |
 | Passport download is JPEG, generated in-browser | `html-to-image` captures both passport faces at 3× pixel density and downloads clearly named front/back files from one click. The only download control sits directly below the card; no HTML document is exported. |
 | Passport stamp is the hackathon credential | The front now carries an `AI EDUCATION / HACKATHON / BUILDER` double-ring rubber stamp, tying the student artefact to the event flyer without copying sponsor branding. |
+| Test student preset lives on the identity step | The clearly labelled testing shortcut fills all core and bonus answers with a fictional, matchable profile and jumps to review; the normal student path is unchanged. |
 
 ## 8. Blockers
 
