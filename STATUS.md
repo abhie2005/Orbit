@@ -1,6 +1,6 @@
 # Orbit — Build Status
 
-**Last updated:** 2026-09-12 — passport JPEG export (Codex)
+**Last updated:** 2026-09-12 — galaxy hero on the landing page (Claude Code)
 **Phase:** M8 — full-stack on Neon Postgres; 24 students, zero-g graph, assistant
 **Demo runnable:** ✅ end to end, verified by script
 **Build passing:** ✅ `npm run verify`
@@ -35,6 +35,14 @@ single sparse student with exactly 1 edge, minimum node separation 130px.
 **Latest UX addition:** the passport reveal page now offers a browser-side
 "Download my unique passport" export button that saves the currently created
 passport as a self-contained HTML artifact.
+
+**Latest visual change:** the landing hero is now the Spline galaxy scene
+(`components/ui/galaxy-interactive-hero-section.tsx`) — full-bleed interactive
+3D field, glass nav floating on it, and a constellation panel that parallaxes
+over the fold into the paper page. The rotating particle sphere is gone. The
+scene is decorative and fails safe: no network, or reduced motion, and the hero
+falls back to a flat night field with the exposed grid. `/` is the only page
+that changed; `npm run check:demo` never visits it.
 
 ## 2. Milestones
 
@@ -116,6 +124,7 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | `components/missions/mission-panel.tsx` | One mission at a time, skip is free |
 | `app/professor/create`, `app/professor/dashboard`, `components/dashboard/*` | Professor side |
 | `components/ui/*` | Primitives, header (wordmark only), hero graphic, demo reset, word-reveal |
+| `components/ui/galaxy-interactive-hero-section.tsx` | The landing hero: Spline galaxy scene, glass nav, constellation panel over the fold. The only dark surface in app chrome. |
 | `app/fonts/README.md` | **How to drop in the licensed Caesura / Peristiva files** |
 
 **Scripts:**
@@ -171,7 +180,12 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | `read()` persists without notifying listeners | `read` is the `getSnapshot` for `useSyncExternalStore` and runs during render. The original version called `write()` there, which notified subscribers mid-render and produced a React "state update on a component that hasn't mounted yet" warning. Seeding now uses `persist()` (localStorage only, no notify). |
 | Passport download is JPEG, generated in-browser | `html-to-image` captures both passport faces at 3× pixel density and downloads clearly named front/back files from one click. The only download control sits directly below the card; no HTML document is exported. |
 | Passport stamp is the hackathon credential | The front carries a rectangular immigration-style `AI EDUCATION / HACKATHON / BUILDER / ADMITTED` stamp with a tiny orbit-route glyph. Its imperfect double rule and faded blue ink tie the student artefact to the event without copying sponsor branding. |
-| Landing hero uses the recursive-erosion field | The original static seven-node SVG is replaced by a transparent native-canvas sphere of rotating amber particles with procedural molten erosion bands. Only the round particle form appears over the page grid—there is no rectangular background or frame. It is deterministic, responsive, dependency-free, and freezes to a representative frame when reduced motion is requested. |
+| ~~Landing hero uses the recursive-erosion field~~ — superseded | Replaced by the galaxy hero below. `components/ui/recursive-erosion.tsx` is kept in the repo but is no longer imported anywhere, so it costs nothing and the sphere can be restored in one line if Abhi wants it back. |
+| **Landing hero is the Spline galaxy scene** | Abhi's direction, from the 21st.dev "galaxy interactive hero section" block. The composition is the block's (full-bleed interactive 3D field, glass nav floating on it, left-aligned hero type, framed panel parallaxing over the fold); everything else is Orbit's — spec §11 copy verbatim, square corners, 2px rules, hard shadows, and the paper palette inverted to paper-on-night. The round particle sphere is gone from the page entirely, per Abhi. |
+| The galaxy scene can fail without taking the hero with it | It is the one CDN asset in the product (`prod.spline.design`), which is exactly what the no-network-on-stage rule exists to prevent. So it is `aria-hidden`, lazy, wrapped in an error boundary, fades in only on `onLoad`, and is never mounted at all under `prefers-reduced-motion`. Behind it sits a flat night field with the same 48px exposed grid as `.orbit-sky`, inverted — no round form, no texture. With no network the hero is that field plus the type, and it still reads as designed. Nothing on the demo path touches it. |
+| `@splinetool/runtime` pinned to 1.x | npm resolves the wrapper's `*` peer to runtime `2.0.46`, which references `../libs/draco/*` and `boolean_wasm_bg.wasm` files it does not ship — `next build` fails with six module-not-found errors. `@splinetool/react-spline@4.1.0` is built against `^1.10.29`; pinning `1.12.98` builds clean. Do not let this float. |
+| "Built with Spline" watermark left visible | Baked into the hosted scene by Spline's free plan, bottom-right, very low contrast. Removing it means a paid Spline seat and our own scene. Same call as the React Flow attribution above. |
+| The panel over the fold shows the constellation, not a screenshot | The source block parallaxes a product screenshot pulled from a stranger's CDN. Orbit has no screenshot to show and will not hotlink someone else's image, so the panel carries `HeroConstellation` on Orbit's own card stock — which is also what bridges the dark hero into the paper page. |
 | Test student preset lives on the identity step | The clearly labelled testing shortcut fills all core and bonus answers with a fictional, matchable profile and jumps to review; the normal student path is unchanged. |
 
 ## 8. Blockers

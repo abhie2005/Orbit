@@ -1,6 +1,5 @@
+import { HeroSection } from "@/components/ui/galaxy-interactive-hero-section";
 import { ButtonLink, Card, SectionLabel } from "@/components/ui/primitives";
-import RecursiveErosionBackground from "@/components/ui/recursive-erosion";
-import { SiteHeader } from "@/components/ui/site-header";
 import { WordReveal } from "@/components/ui/word-reveal";
 import { DEMO_CLASSROOM } from "@/lib/seed-data";
 
@@ -50,59 +49,11 @@ const FEATURES = [
 export default function LandingPage() {
   return (
     <>
-      <SiteHeader>
-        <ButtonLink href="/professor/dashboard" variant="ghost" className="px-4 py-2 text-sm">
-          Professor view
-        </ButtonLink>
-        <ButtonLink href="/join" variant="secondary" className="px-5 py-2 text-sm">
-          Join a class
-        </ButtonLink>
-      </SiteHeader>
-
       <main className="flex-1">
         {/* ---------------------------------------------------------------- */}
-        {/* Hero                                                              */}
+        {/* Hero — galaxy scene, glass nav, constellation panel over the fold  */}
         {/* ---------------------------------------------------------------- */}
-        <section className="orbit-stars relative mx-auto w-full max-w-6xl px-5 pt-16 pb-24 sm:pt-24">
-          <div className="relative grid items-center gap-14 lg:grid-cols-[1.15fr_1fr]">
-            <div>
-              <SectionLabel>First-day classroom belonging</SectionLabel>
-              <h1 className="mt-4 text-balance text-5xl font-semibold leading-[1.03] tracking-tight sm:text-7xl">
-                Find your people
-                <br />
-                in the room.
-              </h1>
-              <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
-                Orbit transforms first-day introductions into student passports and a
-                living classroom constellation.
-              </p>
-
-              <div className="mt-10 flex flex-wrap items-center gap-3">
-                <ButtonLink href="/join">Join a class</ButtonLink>
-                <ButtonLink href="/professor/create" variant="secondary">
-                  Create a class
-                </ButtonLink>
-              </div>
-
-              <p className="mt-6 text-sm text-muted">
-                Demo class{" "}
-                <span className="font-mono font-semibold tracking-[0.2em] text-blue">
-                  {DEMO_CLASSROOM.joinCode}
-                </span>{" "}
-                is preloaded with twelve fictional students.
-              </p>
-            </div>
-
-            <div className="flex justify-center lg:justify-end">
-              <div className="aspect-square w-full max-w-[31rem]">
-                <RecursiveErosionBackground
-                  mode="dark"
-                  className="h-full w-full"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+        <HeroSection joinCode={DEMO_CLASSROOM.joinCode} />
 
         {/* ---------------------------------------------------------------- */}
         {/* Problem                                                           */}
