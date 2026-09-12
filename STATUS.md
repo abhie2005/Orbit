@@ -170,7 +170,7 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | Skills offered and skills wanted are mutually exclusive in the UI | Listing the same skill in both produces a nonsense match reason ("they want to learn X, a skill they can help with"). Each chip list now hides what the other already claimed. |
 | `read()` persists without notifying listeners | `read` is the `getSnapshot` for `useSyncExternalStore` and runs during render. The original version called `write()` there, which notified subscribers mid-render and produced a React "state update on a component that hasn't mounted yet" warning. Seeding now uses `persist()` (localStorage only, no notify). |
 | Passport download is JPEG, generated in-browser | `html-to-image` captures both passport faces at 3× pixel density and downloads clearly named front/back files from one click. The only download control sits directly below the card; no HTML document is exported. |
-| Passport stamp is the hackathon credential | The front now carries an `AI EDUCATION / HACKATHON / BUILDER` double-ring rubber stamp, tying the student artefact to the event flyer without copying sponsor branding. |
+| Passport stamp is the hackathon credential | The front carries a rectangular immigration-style `AI EDUCATION / HACKATHON / BUILDER / ADMITTED` stamp with a tiny orbit-route glyph. Its imperfect double rule and faded blue ink tie the student artefact to the event without copying sponsor branding. |
 | Test student preset lives on the identity step | The clearly labelled testing shortcut fills all core and bonus answers with a fictional, matchable profile and jumps to review; the normal student path is unchanged. |
 
 ## 8. Blockers
