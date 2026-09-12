@@ -130,6 +130,8 @@ function GraphInner({
           source: connection.studentAId,
           target: connection.studentBId,
           selected: connection.id === selectedConnectionId,
+          // Wider than the 1.5px stroke so lines are comfortably clickable.
+          interactionWidth: 26,
           data: {
             category,
             confirmed: connection.status === "confirmed",

@@ -148,3 +148,21 @@ body {
 .react-flow__controls-button:hover svg {
   fill: var(--orbit-ink);
 }
+
+/* ---------------------------------------------------------------------------
+   Chart palette.
+
+   The UI accents (--orbit-*) are tuned for text and borders and sit too light
+   for chart FILLS on this surface. These are darker steps of the same hues,
+   validated against surface #13182A: lightness band, chroma floor, CVD
+   separation, normal-vision floor and contrast all pass in this fixed order.
+   Assign in order; never cycle, never reorder.
+--------------------------------------------------------------------------- */
+
+:root {
+  --chart-1: #7c5cf0; /* violet */
+  --chart-2: #c2760a; /* amber  */
+  --chart-3: #0284c7; /* blue   */
+  --chart-4: #0e9f6e; /* green  */
+  --chart-track: #1b2138;
+}

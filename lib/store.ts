@@ -230,6 +230,64 @@ export function upsertCurrentStudent(draft: DraftProfile): string {
   return id;
 }
 
+export type NewClassroom = {
+  name: string;
+  courseCode: string;
+  instructorName: string;
+  semester: string;
+  approxSize?: number;
+  welcomeMessage?: string;
+};
+
+/** Six characters, no ambiguous 0/O/1/I, derived from the class details. */
+export function generateJoinCode(seed: string): string {
+  const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let hash = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  let code = "";
+  for (let i = 0; i < 6; i += 1) {
+    hash = Math.imul(hash, 1664525) + 1013904223;
+    code += ALPHABET[(hash >>> 8) % ALPHABET.length];
+  }
+  return code;
+}
+
+/**
+ * Start a real, empty class. This REPLACES the seeded demo class — the empty
+ * constellation state is the honest result, and "Reset demo" brings the twelve
+ * fictional students back.
+ */
+export function createClassroom(input: NewClassroom): Classroom {
+  const now = new Date().toISOString();
+  const classroom: Classroom = {
+    id: `class_${now}`,
+    name: input.name.trim() || "Untitled class",
+    courseCode: input.courseCode.trim() || "CLASS",
+    instructorName: input.instructorName.trim() || "Instructor",
+    semester: input.semester.trim() || "This semester",
+    joinCode: generateJoinCode(`${input.name}|${input.courseCode}|${now}`),
+    welcomeMessage: input.welcomeMessage?.trim() || undefined,
+    approxSize: input.approxSize,
+    createdAt: now,
+  };
+
+  update(() => ({
+    version: STATE_VERSION,
+    classroom,
+    students: [],
+    connections: [],
+    missions: [],
+    pulses: [],
+    currentStudentId: null,
+    suggestedPairs: [],
+  }));
+
+  return classroom;
+}
+
 export function setConnectionStatus(
   connectionId: string,
   status: Connection["status"],
