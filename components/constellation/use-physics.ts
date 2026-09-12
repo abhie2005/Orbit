@@ -46,9 +46,9 @@ export function usePhysics({
       const prev = existing.get(id);
       const seed = seedPositions[id];
       // Keep a body where the user left it; only new students get seeded.
-      return prev
-        ? { ...prev, pinned: false }
-        : { id, x: seed.x, y: seed.y, vx: 0, vy: 0, pinned: false };
+      // Preserve pinned state: re-seeding runs on every data change, and
+      // clearing it would silently undo the user's arrangement.
+      return prev ?? { id, x: seed.x, y: seed.y, vx: 0, vy: 0, pinned: false };
     });
 
     const xs = ids.map((id) => seedPositions[id].x);
@@ -146,12 +146,31 @@ export function usePhysics({
     [nodeOffset],
   );
 
+  /**
+   * Dropped nodes STAY where you put them.
+   *
+   * Unpinning on release let the springs pull the node straight back to the
+   * global equilibrium, so the drag looked like it had been undone. Keeping it
+   * pinned is what makes "grab someone and the people bonded to them drift
+   * after" actually read — the anchor holds, the neighbours move.
+   */
   const onDragStop = useCallback((id: string) => {
     draggingRef.current = null;
     releasedAtRef.current = performance.now();
     const body = bodiesRef.current.find((b) => b.id === id);
-    if (body) body.pinned = false;
+    if (body) {
+      body.pinned = true;
+      body.vx = 0;
+      body.vy = 0;
+    }
   }, []);
+
+  /** Release every pinned node so the class relaxes back on its own. */
+  const unpinAll = useCallback(() => {
+    for (const body of bodiesRef.current) body.pinned = false;
+    releasedAtRef.current = performance.now();
+    run();
+  }, [run]);
 
   /** Nudge everything so a fresh graph settles into its springs on arrival. */
   const settle = useCallback(() => {
@@ -161,5 +180,5 @@ export function usePhysics({
     run();
   }, [enabled, run]);
 
-  return { onDragStart, onDrag, onDragStop, settle };
+  return { onDragStart, onDrag, onDragStop, settle, unpinAll };
 }

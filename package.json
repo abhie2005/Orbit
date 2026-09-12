@@ -13,7 +13,9 @@
     "check:demo": "node scripts/demo-check.mjs"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
     "@xyflow/react": "^12.11.6",
+    "drizzle-orm": "^0.45.2",
     "framer-motion": "^13.2.0",
     "nanoid": "^6.0.1",
     "next": "16.3.5",
@@ -26,6 +28,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^11.0.0",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
     "playwright": "^1.63.0",

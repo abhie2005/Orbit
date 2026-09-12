@@ -33,20 +33,29 @@ export type Link = {
 export const PHYSICS = {
   /** How hard a link pulls. Scaled per-link by `strength`. */
   springBase: 0.042,
-  /** Natural separation for a link at full strength. */
-  restLength: 265,
+  /**
+   * Natural separation for a link at full strength. Matches the one-shot
+   * layout's ideal edge length, so grabbing a node does not yank the whole
+   * graph into a different (tighter) equilibrium.
+   */
+  restLength: 330,
   /** Weak bonds want to sit further apart than strong ones. */
   restSpread: 150,
   /**
-   * Keeps discs — and their name labels — apart. The radius has to clear the
-   * label chip under each node, not just the 52px disc, or long names collide.
+   * Repulsion is GLOBAL, not radius-limited. Springs attract at any distance,
+   * so a cutoff radius left long edges pulling with nothing pushing back and
+   * the whole constellation collapsed inward on the first drag.
    */
-  repulsion: 42000,
-  repulsionRadius: 265,
+  repulsion: 165000,
+  /** Springs are clamped so one very long edge cannot yank a node across. */
+  maxSpringForce: 2.2,
   /** Low damping is what makes it read as zero-g rather than syrup. */
   damping: 0.90,
-  /** Very weak pull home so a flung cluster eventually returns on screen. */
-  homing: 0.0007,
+  /**
+   * Barely-there pull home so a flung cluster cannot drift off screen forever.
+   * Kept tiny: anything stronger fights the arrangement the user just made.
+   */
+  homing: 0.00035,
   maxSpeed: 18,
 } as const;
 
@@ -78,7 +87,8 @@ export function stepPhysics(
     const dist = Math.max(Math.hypot(dx, dy), 0.01);
     // Strong bonds sit closer AND pull harder.
     const rest = PHYSICS.restLength + (1 - link.strength) * PHYSICS.restSpread;
-    const force = (dist - rest) * PHYSICS.springBase * link.strength;
+    const raw = (dist - rest) * PHYSICS.springBase * link.strength;
+    const force = Math.max(-PHYSICS.maxSpringForce, Math.min(PHYSICS.maxSpringForce, raw));
     const fx = (dx / dist) * force;
     const fy = (dy / dist) * force;
 
@@ -92,7 +102,7 @@ export function stepPhysics(
     }
   }
 
-  // Short-range repulsion so discs never stack.
+  // Global repulsion — every pair, no cutoff. This is what balances the springs.
   for (let i = 0; i < bodies.length; i += 1) {
     for (let j = i + 1; j < bodies.length; j += 1) {
       const a = bodies[i];
@@ -100,9 +110,8 @@ export function stepPhysics(
       const dx = a.x - b.x;
       const dy = a.y - b.y;
       const distSq = dx * dx + dy * dy;
-      if (distSq > PHYSICS.repulsionRadius * PHYSICS.repulsionRadius) continue;
       const dist = Math.max(Math.sqrt(distSq), 0.01);
-      const magnitude = PHYSICS.repulsion / Math.max(distSq, 400);
+      const magnitude = PHYSICS.repulsion / Math.max(distSq, 2500);
       const fx = (dx / dist) * magnitude;
       const fy = (dy / dist) * magnitude;
       if (!a.pinned) {
