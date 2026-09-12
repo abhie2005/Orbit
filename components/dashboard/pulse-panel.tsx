@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { Button, Card, SectionLabel } from "@/components/ui/primitives";
 import type { PulseSummary } from "@/lib/insights";
 
@@ -25,8 +27,9 @@ export function PulsePanel({
 }: {
   before: PulseSummary | null;
   after: PulseSummary | null;
-  onSimulate?: () => void;
+  onSimulate?: () => void | Promise<void>;
 }) {
+  const [running, setRunning] = useState(false);
   return (
     <Card className="p-6">
       <SectionLabel>Belonging pulse · anonymous</SectionLabel>
@@ -47,8 +50,22 @@ export function PulsePanel({
           colorVar="var(--chart-1)"
           emptyAction={
             onSimulate ? (
-              <Button variant="secondary" className="px-4 py-2 text-sm" onClick={onSimulate}>
-                Run the activity
+              <Button
+                variant="secondary"
+                className="px-4 py-2 text-sm"
+                disabled={running}
+                onClick={async () => {
+                  // The round trip hits the database, so say so rather than
+                  // letting the button sit there looking dead.
+                  setRunning(true);
+                  try {
+                    await onSimulate();
+                  } finally {
+                    setRunning(false);
+                  }
+                }}
+              >
+                {running ? "Running…" : "Run the activity"}
               </Button>
             ) : null
           }

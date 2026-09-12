@@ -127,7 +127,13 @@ await page.screenshot({ path: "/tmp/shots/e2e-list.png" });
 await page.goto(`${BASE}/professor/dashboard`, { waitUntil: "networkidle" });
 await page.waitForTimeout(900);
 await page.getByRole("button", { name: "Run the activity" }).click();
-await page.waitForTimeout(900);
+// A real database round trip now, not a local state flip. Wait for the OUTCOME
+// rather than for a spinner to vanish — the spinner is absent at click time too.
+await page.waitForFunction(
+  () => /agreement moved from/i.test(document.body.innerText),
+  undefined,
+  { timeout: 25000 },
+).catch(() => {});
 const afterText = (await page.locator("main").innerText()).toLowerCase();
 check("Belonging pulse shows before and after",
   afterText.includes("before the activity") && afterText.includes("after the activity")

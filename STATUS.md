@@ -1,7 +1,7 @@
 # Orbit — Build Status
 
 **Last updated:** 2026-09-12 — session 1 (Claude Code)
-**Phase:** M7 — feature-complete; 24 students, zero-g graph, grounded assistant
+**Phase:** M8 — full-stack on Neon Postgres; 24 students, zero-g graph, assistant
 **Demo runnable:** ✅ end to end, verified by script
 **Build passing:** ✅ `npm run verify`
 **Demo path passing:** ✅ `npm run check:demo` — **15/15**
@@ -86,6 +86,10 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | `lib/matching.ts` | `scorePair`, `buildConstellation`, `rankSuggestionsFor`, `explainReasons` |
 | `lib/grouping.ts` | `bridgeTheClass` greedy grouping + rationale strings |
 | `lib/missions.ts` | Templated conversation starters — deterministic, no LLM needed |
+| `lib/db/schema.ts` | Drizzle schema mirroring `lib/types.ts` |
+| `lib/db/repository.ts` | The only module that talks to the database |
+| `lib/db/client.ts` | Lazy Neon client (eager init breaks `next build`) |
+| `app/api/*` | state · students · connections · pulse · missions · reset · simulate |
 | `lib/assistant.ts` | Grounded Q&A + assignment→groups. No model call, no API key. |
 | `lib/physics.ts` | Zero-gravity spring simulation for the constellation |
 | `lib/insights.ts` | Aggregate-only professor stats (deliberately has no "isolated students" function) |

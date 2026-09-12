@@ -9,7 +9,7 @@
  * read/write pair below without touching a single component.
  */
 
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { buildConstellation, confirmedDegrees, pairKey } from "./matching";
 import { deriveFeatures } from "./privacy";
 import {
@@ -149,6 +149,70 @@ function write(next: OrbitState): void {
   for (const listener of listeners) listener();
 }
 
+/* ---------------------------------------------------------------------------
+   Server transport.
+
+   Orbit is now backed by Neon Postgres, so the class is shared across devices —
+   students really can join from their own phones. Reads and writes go through
+   these helpers; the in-memory snapshot stays the synchronous source the
+   components read, which is why no component changed when the backend landed.
+
+   `currentStudentId` deliberately stays device-local: which student *you* are
+   is identity, not shared classroom data.
+--------------------------------------------------------------------------- */
+
+type Snapshot = Omit<OrbitState, "version" | "currentStudentId">;
+
+let hydrated = false;
+let hydrating: Promise<void> | null = null;
+
+/** Merge a server snapshot over local state, preserving device identity. */
+function applySnapshot(snapshot: Snapshot): void {
+  const current = read();
+  write({
+    ...current,
+    ...snapshot,
+    version: STATE_VERSION,
+    currentStudentId: current.currentStudentId,
+  });
+}
+
+async function api<T = Snapshot>(path: string, init?: RequestInit): Promise<T | null> {
+  try {
+    const response = await fetch(path, {
+      ...init,
+      headers: { "content-type": "application/json", ...(init?.headers ?? {}) },
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      console.warn(`[orbit] ${path} -> ${response.status}; keeping local state`);
+      return null;
+    }
+    return (await response.json()) as T;
+  } catch (error) {
+    // A dead network must not blank the screen mid-demo.
+    console.warn("[orbit] request failed; keeping local state", error);
+    return null;
+  }
+}
+
+/** Pull the shared classroom once per page load. */
+export function hydrate(): Promise<void> {
+  if (!isBrowser() || hydrated) return Promise.resolve();
+  hydrating ??= (async () => {
+    const snapshot = await api("/api/state");
+    if (snapshot) applySnapshot(snapshot);
+    hydrated = true;
+  })();
+  return hydrating;
+}
+
+/** Re-read the shared class (another device may have changed it). */
+export async function refresh(): Promise<void> {
+  const snapshot = await api("/api/state");
+  if (snapshot) applySnapshot(snapshot);
+}
+
 function subscribe(listener: () => void): () => void {
   listeners.add(listener);
   return () => listeners.delete(listener);
@@ -172,7 +236,6 @@ export function update(mutate: (state: OrbitState) => OrbitState): OrbitState {
 // ---------------------------------------------------------------------------
 
 export function resetDemo(): void {
-  memoryState = null;
   if (isBrowser()) {
     try {
       window.localStorage.removeItem(STORAGE_KEY);
@@ -180,7 +243,12 @@ export function resetDemo(): void {
       /* ignore */
     }
   }
-  write(createSeededState());
+  memoryState = createSeededState();
+  write(memoryState);
+  // Reset the shared class too, otherwise a rehearsal only clears this device.
+  void api("/api/reset", { method: "POST" }).then((snapshot) => {
+    if (snapshot) applySnapshot(snapshot);
+  });
 }
 
 export function joinCodeMatches(code: string, classroom: Classroom): boolean {
@@ -232,6 +300,17 @@ export function upsertCurrentStudent(draft: DraftProfile): string {
     next.connections = rebuildConnections(next);
     return next;
   });
+
+  void api("/api/students", {
+    method: "POST",
+    body: JSON.stringify({
+      id,
+      displayName: student.displayName,
+      pronouns: student.pronouns,
+      meetingPreference,
+      answers: draft.answers,
+    }),
+  }).then((snapshot) => snapshot && applySnapshot(snapshot));
 
   return id;
 }
@@ -331,6 +410,10 @@ export function confirmIntroduction(aId: string, bId: string): void {
       suggestedPairs: [...new Set([...state.suggestedPairs, key])],
     };
   });
+  void api("/api/connections", {
+    method: "POST",
+    body: JSON.stringify({ studentAId: aId, studentBId: bId, status: "confirmed" }),
+  }).then((snapshot) => snapshot && applySnapshot(snapshot));
 }
 
 export function dismissSuggestion(aId: string, bId: string): void {
@@ -346,6 +429,10 @@ export function dismissSuggestion(aId: string, bId: string): void {
       suggestedPairs: [...new Set([...state.suggestedPairs, key])],
     };
   });
+  void api("/api/connections", {
+    method: "POST",
+    body: JSON.stringify({ studentAId: aId, studentBId: bId, status: "dismissed" }),
+  }).then((snapshot) => snapshot && applySnapshot(snapshot));
 }
 
 export function recordPulse(phase: "before" | "after", score: 1 | 2 | 3 | 4 | 5): void {
@@ -362,6 +449,10 @@ export function recordPulse(phase: "before" | "after", score: 1 | 2 | 3 | 4 | 5)
       },
     ],
   }));
+  void api("/api/pulse", {
+    method: "POST",
+    body: JSON.stringify({ phase, score }),
+  }).then((snapshot) => snapshot && applySnapshot(snapshot));
 }
 
 export function saveMissions(missions: Mission[]): void {
@@ -380,25 +471,11 @@ export function setMissionStatus(missionId: string, status: Mission["status"]): 
 }
 
 /** Simulate the rest of the class meeting each other, for the "after" story. */
-export function simulateClassActivity(): void {
-  update((state) => {
-    const connections = state.connections.map((c, index) =>
-      c.status === "suggested" && index % 2 === 0
-        ? { ...c, status: "confirmed" as const }
-        : c,
-    );
-    const after: BelongingPulse[] = [4, 5, 4, 4, 3, 5, 4, 5, 4, 4, 5, 3].map(
-      (score, i) => ({
-        id: `pulse_after_${i}`,
-        classroomId: state.classroom.id,
-        phase: "after" as const,
-        score: score as 1 | 2 | 3 | 4 | 5,
-        createdAt: new Date().toISOString(),
-      }),
-    );
-    const withoutOldAfter = state.pulses.filter((p) => p.phase !== "after");
-    return { ...state, connections, pulses: [...withoutOldAfter, ...after] };
-  });
+/** Returns a promise so the UI can show progress instead of appearing dead. */
+export async function simulateClassActivity(): Promise<void> {
+  // Server-side so the "after" story is the same on every device.
+  const snapshot = await api("/api/simulate", { method: "POST" });
+  if (snapshot) applySnapshot(snapshot);
 }
 
 // ---------------------------------------------------------------------------
@@ -406,7 +483,12 @@ export function simulateClassActivity(): void {
 // ---------------------------------------------------------------------------
 
 export function useOrbit(): OrbitState {
-  return useSyncExternalStore(subscribe, read, getServerSnapshot);
+  const state = useSyncExternalStore(subscribe, read, getServerSnapshot);
+  // One shared hydrate per page load; the guard inside makes repeat calls free.
+  useEffect(() => {
+    void hydrate();
+  }, []);
+  return state;
 }
 
 export function useCurrentStudent(): StudentRecord | null {

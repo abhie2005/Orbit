@@ -310,14 +310,32 @@ export async function resetToSeed(): Promise<ClassroomSnapshot> {
 
   await rebuildConnections(id);
 
-  // A few introductions already happened, so the "before" picture is honest.
-  const preConfirmed: [string, string][] = [
+  /*
+   * A few introductions already happened, so the "before" picture is honest
+   * rather than an empty graph. The named pairs are the intent; they are topped
+   * up from the strongest remaining edges because growing the class can drop a
+   * named pair out of the top-N graph, which silently left fewer confirmed than
+   * intended.
+   */
+  const TARGET_CONFIRMED = 4;
+  const named: [string, string][] = [
     ["stu_maya", "stu_jordan"],
     ["stu_leo", "stu_marcus"],
     ["stu_priya", "stu_sofia"],
     ["stu_sam", "stu_noor"],
   ];
-  for (const [a, b] of preConfirmed) {
+  const edges = (await getSnapshot(id))?.connections ?? [];
+  const edgeKeys = new Set(edges.map((c) => pairKey(c.studentAId, c.studentBId)));
+  const chosen: [string, string][] = named.filter(([a, b]) => edgeKeys.has(pairKey(a, b)));
+
+  for (const edge of [...edges].sort((x, y) => y.score - x.score || x.id.localeCompare(y.id))) {
+    if (chosen.length >= TARGET_CONFIRMED) break;
+    const key = pairKey(edge.studentAId, edge.studentBId);
+    if (chosen.some(([a, b]) => pairKey(a, b) === key)) continue;
+    chosen.push([edge.studentAId, edge.studentBId]);
+  }
+
+  for (const [a, b] of chosen) {
     await setConnectionStatus(id, a, b, "confirmed");
   }
 
