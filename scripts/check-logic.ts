@@ -141,3 +141,56 @@ for (let i = 0; i < pts.length; i += 1) {
 }
 
 console.log("✅ layout checks passed\n");
+
+
+// ---- passport legibility ---------------------------------------------------
+
+import { avatarTextColor, buildPassport } from "../lib/passport";
+
+/** WCAG relative luminance for a hex colour. */
+function lumOf(hex: string): number {
+  const v = hex.replace("#", "");
+  const ch = [0, 2, 4].map((i) => parseInt(v.slice(i, i + 2), 16) / 255);
+  const f = (c: number) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+  return 0.2126 * f(ch[0]) + 0.7152 * f(ch[1]) + 0.0722 * f(ch[2]);
+}
+
+function hslMid(h: number): string {
+  // Mirror of the avatar gradient midpoint used by avatarTextColor.
+  const s = 0.75;
+  const l = 0.62;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const hp = ((((h + 20) % 360) + 360) % 360) / 60;
+  const x = c * (1 - Math.abs((hp % 2) - 1));
+  const seg: [number, number, number] =
+    hp < 1 ? [c, x, 0] : hp < 2 ? [x, c, 0] : hp < 3 ? [0, c, x]
+    : hp < 4 ? [0, x, c] : hp < 5 ? [x, 0, c] : [c, 0, x];
+  const m = l - c / 2;
+  return (
+    "#" +
+    seg
+      .map((v) => Math.round((v + m) * 255).toString(16).padStart(2, "0"))
+      .join("")
+  );
+}
+
+const contrastOf = (a: string, b: string) => {
+  const [la, lb] = [lumOf(a), lumOf(b)];
+  return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+};
+
+console.log("\nAvatar initials contrast (must be >= 3.0 on every generated orb)");
+let worst = Infinity;
+for (const record of SEED_STUDENTS) {
+  const pass = buildPassport(record.student, record.answers);
+  const ink = avatarTextColor(pass.orbit.hue);
+  const ratio = contrastOf(ink, hslMid(pass.orbit.hue));
+  worst = Math.min(worst, ratio);
+  assert.ok(
+    ratio >= 3,
+    `${record.student.displayName}: initials contrast ${ratio.toFixed(2)} is below 3.0`,
+  );
+}
+console.log(`  worst case ${worst.toFixed(2)}:1 across ${SEED_STUDENTS.length} students`);
+
+console.log("\n✅ passport legibility checks passed\n");

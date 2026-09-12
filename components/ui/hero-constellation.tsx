@@ -38,8 +38,8 @@ export function HeroConstellation() {
     >
       <defs>
         <radialGradient id="orbit-node-fill" cx="35%" cy="30%">
-          <stop offset="0%" stopColor="#c4b5fd" />
-          <stop offset="100%" stopColor="#6d5ce0" />
+          <stop offset="0%" stopColor="#8b6ae8" />
+          <stop offset="100%" stopColor="#4c1d95" />
         </radialGradient>
       </defs>
 
@@ -57,20 +57,21 @@ export function HeroConstellation() {
             strokeWidth={1.75}
             strokeDasharray={edge.dash}
             strokeLinecap="round"
-            opacity={0.7}
+            opacity={0.85}
           />
         );
       })}
 
       {NODES.map((node) => (
         <g key={node.label}>
+          {/* Knockout ring so edges never run under a node on paper. */}
           <circle cx={node.x} cy={node.y} r={19} fill="var(--orbit-bg)" />
           <circle
             cx={node.x}
             cy={node.y}
             r={16}
             fill="url(#orbit-node-fill)"
-            stroke="rgba(248,250,252,0.35)"
+            stroke="rgba(21,22,26,0.28)"
             strokeWidth={1}
           />
           <text
@@ -79,7 +80,7 @@ export function HeroConstellation() {
             textAnchor="middle"
             fontSize={13}
             fontWeight={600}
-            fill="#0b0f1c"
+            fill="#f7f2e8"
           >
             {node.label}
           </text>

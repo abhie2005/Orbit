@@ -95,11 +95,13 @@ function PassportFront({
 }) {
   const { student, features, orbit } = passport;
 
+  // Two only, and hung off the frame's bottom edge — three stacked upward far
+  // enough to cover the initials.
   const stickers = [
-    ...features.academicInterests.slice(0, 2),
+    ...features.academicInterests.slice(0, 1),
     ...features.hobbies.slice(0, 1),
     ...features.movieGenres.slice(0, 1),
-  ].slice(0, 3);
+  ].slice(0, 2);
 
   const role = features.projectRoles[0];
 
@@ -127,7 +129,7 @@ function PassportFront({
               </div>
 
               {/* Stickers slapped over the photo corner */}
-              <div className="absolute -bottom-2 left-1 right-1 flex flex-col items-start gap-1">
+              <div className="absolute -bottom-3 left-0 right-0 flex translate-y-1/3 flex-col items-start gap-1">
                 {stickers.map((sticker, i) => (
                   <motion.span
                     key={sticker}

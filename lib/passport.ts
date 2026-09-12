@@ -59,3 +59,45 @@ export function serialFor(student: Student, courseCode: string): string {
   const n = hash(student.id) % 1000000;
   return `${courseCode.replace(/\s+/g, "")}-${String(n).padStart(6, "0")}`;
 }
+
+/* -------------------------------------------------------------------------- */
+
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const hp = ((h % 360) + 360) % 360 / 60;
+  const x = c * (1 - Math.abs((hp % 2) - 1));
+  const [r1, g1, b1] =
+    hp < 1 ? [c, x, 0]
+    : hp < 2 ? [x, c, 0]
+    : hp < 3 ? [0, c, x]
+    : hp < 4 ? [0, x, c]
+    : hp < 5 ? [x, 0, c]
+    : [c, 0, x];
+  const m = l - c / 2;
+  return [r1 + m, g1 + m, b1 + m];
+}
+
+function relativeLuminance([r, g, b]: [number, number, number]): number {
+  const f = (v: number) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+}
+
+const AVATAR_INK = "#0b0f1c";
+const AVATAR_PAPER = "#f7f2e8";
+
+/**
+ * Initials must stay legible on an orb whose hue is derived from the student
+ * id — a deep blue orb and a pale yellow one cannot share a text colour.
+ * Picks whichever of ink/paper has the better contrast against the gradient
+ * midpoint, so no student ends up with unreadable initials.
+ */
+export function avatarTextColor(hue: number): string {
+  const midpoint = relativeLuminance(hslToRgb((hue + 20) % 360, 0.75, 0.62));
+  const contrast = (a: number, b: number) =>
+    (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  const inkLum = relativeLuminance(hslToRgb(230, 0.47, 0.08));
+  const paperLum = relativeLuminance(hslToRgb(40, 0.43, 0.94));
+  return contrast(midpoint, inkLum) >= contrast(midpoint, paperLum)
+    ? AVATAR_INK
+    : AVATAR_PAPER;
+}

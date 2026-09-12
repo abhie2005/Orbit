@@ -25,7 +25,8 @@ export function ConnectionEdge({
   const dimmed = data?.dimmed ?? false;
   const highlighted = data?.highlighted ?? false;
 
-  const opacity = dimmed ? 0.07 : highlighted || selected ? 1 : 0.42;
+  // Paper needs a higher resting opacity than the old dark canvas did.
+  const opacity = dimmed ? 0.09 : highlighted || selected ? 1 : 0.58;
   const width = selected ? 3.4 : highlighted ? 2.6 : confirmed ? 2 : 1.5;
 
   return (
@@ -52,7 +53,7 @@ export function ConnectionEdge({
               borderColor: color,
               color,
             }}
-            className="pointer-events-none absolute rounded-full border bg-[#090b14] px-2.5 py-1 text-[0.7rem] font-medium"
+            className="pointer-events-none absolute rounded-full border bg-[color:var(--orbit-surface)] px-2.5 py-1 text-[0.7rem] font-medium"
           >
             <span aria-hidden="true">{data?.glyph} </span>
             {data?.categoryLabel}

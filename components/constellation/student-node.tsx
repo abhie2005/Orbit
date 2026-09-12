@@ -34,9 +34,9 @@ export function StudentNode({ data, selected }: NodeProps<StudentNode>) {
       <div
         className={`rounded-full ${
           selected
-            ? "ring-2 ring-blue ring-offset-4 ring-offset-[#090b14]"
+            ? "ring-2 ring-blue ring-offset-4 ring-offset-[color:var(--orbit-bg)]"
             : isCurrent
-              ? "ring-2 ring-amber ring-offset-4 ring-offset-[#090b14]"
+              ? "ring-2 ring-amber ring-offset-4 ring-offset-[color:var(--orbit-bg)]"
               : ""
         }`}
         style={{ width: NODE_SIZE, height: NODE_SIZE }}
@@ -51,7 +51,7 @@ export function StudentNode({ data, selected }: NodeProps<StudentNode>) {
 
       {/* Absolutely positioned so the node box stays exactly NODE_SIZE wide and
           React Flow's measured size matches the circle it is meant to centre. */}
-      <span data-orbit-label className="pointer-events-none absolute left-1/2 top-full mt-2.5 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#090b14]/85 px-2 py-0.5 text-xs font-medium text-ink">
+      <span data-orbit-label className="pointer-events-none absolute left-1/2 top-full mt-2.5 -translate-x-1/2 whitespace-nowrap rounded-full bg-[color:var(--orbit-surface)]/90 px-2 py-0.5 text-xs font-medium text-ink">
         {passport.student.displayName}
         {isCurrent ? <span className="text-amber"> · you</span> : null}
       </span>

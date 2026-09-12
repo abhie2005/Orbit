@@ -4,22 +4,38 @@
 @import "@xyflow/react/dist/style.css";
 
 /* ---------------------------------------------------------------------------
-   Orbit design tokens (spec §12).
-   Orbit is a single committed dark experience — a night sky. It does not
-   invert, so these are defined once and painted explicitly.
+   Orbit design tokens — paper theme.
+
+   Orbit is a single committed LIGHT experience: the whole product is the same
+   card stock the passport is printed on. It does not invert, so these are
+   defined once and painted explicitly.
+
+   The four edge-category hues are spec §12's categories re-derived for a paper
+   canvas. The spec's original values (#38BDF8, #F59E0B, #8B5CF6, #34D399) were
+   tuned for a near-black background and land at 1.7-1.9:1 on cream, which is
+   unreadable. These keep the same hue identities (blue / amber / violet /
+   green) while clearing WCAG AA on --color-surface:
+
+     blue   #1A5FA8  5.80:1      violet #6D33D6  6.08:1
+     amber  #9A5B06  4.86:1      green  #0E7D57  4.60:1
+
+   Category is never carried by colour alone regardless: every edge also has a
+   glyph, a text label and a line pattern.
 --------------------------------------------------------------------------- */
 
 @theme {
-  --color-bg: #090b14;
-  --color-surface: #13182a;
-  --color-surface-2: #1b2138;
-  --color-line: #2a3150;
-  --color-violet: #8b5cf6;
-  --color-blue: #38bdf8;
-  --color-amber: #f59e0b;
-  --color-green: #34d399;
-  --color-ink: #f8fafc;
-  --color-muted: #aab4cb;
+  --color-bg: #efe8da;
+  --color-surface: #f7f2e8;
+  --color-surface-2: #e6ddcb;
+  --color-line: #cabfa7;
+  /* Interactive borders need 3:1; decorative hairlines use --color-line. */
+  --color-line-strong: #9b8f76;
+  --color-violet: #6d33d6;
+  --color-blue: #1a5fa8;
+  --color-amber: #9a5b06;
+  --color-green: #0e7d57;
+  --color-ink: #15161a;
+  --color-muted: #5f5849;
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
@@ -28,16 +44,18 @@
 }
 
 :root {
-  /* Mirrored as plain vars so SVG/React Flow can read them. */
-  --orbit-bg: #090b14;
-  --orbit-surface: #13182a;
-  --orbit-violet: #8b5cf6;
-  --orbit-blue: #38bdf8;
-  --orbit-amber: #f59e0b;
-  --orbit-green: #34d399;
-  --orbit-ink: #f8fafc;
-  --orbit-muted: #aab4cb;
-  color-scheme: dark;
+  /* Mirrored as plain vars so SVG and React Flow can read them. */
+  --orbit-bg: #efe8da;
+  --orbit-surface: #f7f2e8;
+  --orbit-surface-2: #e6ddcb;
+  --orbit-line: #cabfa7;
+  --orbit-violet: #6d33d6;
+  --orbit-blue: #1a5fa8;
+  --orbit-amber: #9a5b06;
+  --orbit-green: #0e7d57;
+  --orbit-ink: #15161a;
+  --orbit-muted: #5f5849;
+  color-scheme: light;
 }
 
 html,
@@ -65,29 +83,31 @@ body {
 
 .orbit-sky {
   background-color: var(--orbit-bg);
+  /* Warm paper wash — the same tinting the passport stock has, at page scale. */
   background-image:
-    radial-gradient(ellipse 80% 55% at 50% -10%, rgba(139, 92, 246, 0.22), transparent 70%),
-    radial-gradient(ellipse 60% 45% at 85% 15%, rgba(56, 189, 248, 0.14), transparent 70%),
-    radial-gradient(ellipse 70% 50% at 10% 85%, rgba(52, 211, 153, 0.08), transparent 70%);
+    radial-gradient(ellipse 80% 55% at 50% -10%, rgba(109, 51, 214, 0.08), transparent 70%),
+    radial-gradient(ellipse 60% 45% at 85% 15%, rgba(26, 95, 168, 0.07), transparent 70%),
+    radial-gradient(ellipse 70% 50% at 10% 85%, rgba(154, 91, 6, 0.06), transparent 70%);
 }
 
+/* Paper fleck: the speckle of real card stock, replacing the old starfield. */
 .orbit-stars::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.55;
+  opacity: 0.5;
   background-image:
-    radial-gradient(1px 1px at 12% 22%, #fff 50%, transparent),
-    radial-gradient(1px 1px at 78% 14%, #cbd5f5 50%, transparent),
-    radial-gradient(1.5px 1.5px at 34% 68%, #fff 50%, transparent),
-    radial-gradient(1px 1px at 62% 48%, #a5b4fc 50%, transparent),
-    radial-gradient(1px 1px at 89% 72%, #fff 50%, transparent),
-    radial-gradient(1px 1px at 22% 88%, #cbd5f5 50%, transparent),
-    radial-gradient(1.5px 1.5px at 51% 8%, #fff 50%, transparent),
-    radial-gradient(1px 1px at 7% 54%, #a5b4fc 50%, transparent),
-    radial-gradient(1px 1px at 44% 36%, #fff 50%, transparent),
-    radial-gradient(1px 1px at 95% 40%, #cbd5f5 50%, transparent);
+    radial-gradient(1px 1px at 12% 22%, rgba(21, 22, 26, 0.3) 50%, transparent),
+    radial-gradient(1px 1px at 78% 14%, rgba(21, 22, 26, 0.22) 50%, transparent),
+    radial-gradient(1.5px 1.5px at 34% 68%, rgba(154, 91, 6, 0.25) 50%, transparent),
+    radial-gradient(1px 1px at 62% 48%, rgba(21, 22, 26, 0.2) 50%, transparent),
+    radial-gradient(1px 1px at 89% 72%, rgba(21, 22, 26, 0.26) 50%, transparent),
+    radial-gradient(1px 1px at 22% 88%, rgba(109, 51, 214, 0.22) 50%, transparent),
+    radial-gradient(1.5px 1.5px at 51% 8%, rgba(21, 22, 26, 0.18) 50%, transparent),
+    radial-gradient(1px 1px at 7% 54%, rgba(21, 22, 26, 0.24) 50%, transparent),
+    radial-gradient(1px 1px at 44% 36%, rgba(21, 22, 26, 0.16) 50%, transparent),
+    radial-gradient(1px 1px at 95% 40%, rgba(26, 95, 168, 0.22) 50%, transparent);
 }
 
 /* ---------------------------------------------------------------------------
@@ -104,13 +124,13 @@ body {
   }
 }
 
-/* React Flow overrides so the graph sits on our sky, not its own canvas.
+/* React Flow overrides so the graph sits on our paper, not its own canvas.
    The attribution stays visible — hiding it requires a React Flow Pro licence. */
 .react-flow__attribution {
   background: transparent;
 }
 .react-flow__attribution a {
-  color: #55608a;
+  color: #9b8f76;
   font-size: 9px;
 }
 .react-flow__node:focus-visible,
@@ -122,7 +142,7 @@ body {
   pointer-events: none;
 }
 
-/* React Flow controls, restyled for the night sky. */
+/* React Flow controls, restyled for paper. */
 .react-flow__controls {
   box-shadow: none;
   gap: 2px;
@@ -131,14 +151,14 @@ body {
 }
 .react-flow__controls-button {
   background: var(--orbit-surface);
-  border: 1px solid #2a3150;
+  border: 1px solid var(--orbit-line);
   border-radius: 8px;
   width: 28px;
   height: 28px;
   padding: 6px;
 }
 .react-flow__controls-button:hover {
-  background: #1b2138;
+  background: var(--orbit-surface-2);
 }
 .react-flow__controls-button svg {
   fill: var(--orbit-muted);
@@ -152,19 +172,19 @@ body {
 /* ---------------------------------------------------------------------------
    Chart palette.
 
-   The UI accents (--orbit-*) are tuned for text and borders and sit too light
-   for chart FILLS on this surface. These are darker steps of the same hues,
-   validated against surface #13182A: lightness band, chroma floor, CVD
-   separation, normal-vision floor and contrast all pass in this fixed order.
+   On paper the UI accents are already dark enough to serve as chart fills, so
+   the chart ramp is the accent set itself — one palette, no drift between a
+   legend swatch and the bar it labels. All four clear 4.5:1 on --color-surface
+   and stay separated under the common CVD simulations.
    Assign in order; never cycle, never reorder.
 --------------------------------------------------------------------------- */
 
 :root {
-  --chart-1: #7c5cf0; /* violet */
-  --chart-2: #c2760a; /* amber  */
-  --chart-3: #0284c7; /* blue   */
-  --chart-4: #0e9f6e; /* green  */
-  --chart-track: #1b2138;
+  --chart-1: #6d33d6; /* violet */
+  --chart-2: #9a5b06; /* amber  */
+  --chart-3: #1a5fa8; /* blue   */
+  --chart-4: #0e7d57; /* green  */
+  --chart-track: #e6ddcb;
 }
 
 /* ---------------------------------------------------------------------------
@@ -182,7 +202,8 @@ body {
 }
 
 .passport {
-  --paper: #f3ede1;
+  /* Lighter than the page (--color-bg #efe8da) so the card lifts off it. */
+  --paper: #fbf7ef;
   --paper-shade: #e7dece;
   --paper-ink: #15161a;
   --paper-rule: #15161a;

@@ -184,7 +184,7 @@ function GraphInner({
       fitView
       fitViewOptions={{ padding: 0.18 }}
     >
-      <Background variant={BackgroundVariant.Dots} gap={34} size={1} color="#2a3150" />
+      <Background variant={BackgroundVariant.Dots} gap={34} size={1} color="var(--orbit-line)" />
       <Controls showInteractive={false} position="bottom-right" />
     </ReactFlow>
   );

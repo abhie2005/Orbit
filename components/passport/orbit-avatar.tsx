@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { initialsOf } from "@/lib/passport";
+import { avatarTextColor, initialsOf } from "@/lib/passport";
 import type { Passport } from "@/lib/types";
 
 /**
@@ -75,7 +75,7 @@ export function OrbitAvatar({
           cy={center}
           r={core}
           fill={`url(#core-${passport.student.id})`}
-          stroke="rgba(248,250,252,0.3)"
+          stroke="rgba(21,22,26,0.3)"
         />
       </svg>
 
@@ -101,8 +101,8 @@ export function OrbitAvatar({
       ) : null}
 
       <span
-        className="absolute inset-0 flex items-center justify-center font-semibold text-[#0b0f1c]"
-        style={{ fontSize: size * 0.2 }}
+        className="absolute inset-0 flex items-center justify-center font-semibold"
+        style={{ fontSize: size * 0.2, color: avatarTextColor(hue) }}
       >
         {initialsOf(passport.student.displayName)}
       </span>
