@@ -179,7 +179,7 @@ export const QUESTIONS: readonly Question[] = [
   },
   {
     key: "skillsOffered",
-    prompt: "What is one skill you can help classmates with?",
+    prompt: "What skills can you help classmates with?",
     helper: "You do not need to be an expert. Enough to unblock someone counts.",
     type: "chips",
     options: SKILLS,
@@ -190,7 +190,7 @@ export const QUESTIONS: readonly Question[] = [
   },
   {
     key: "skillsWanted",
-    prompt: "What is one skill you want to learn?",
+    prompt: "What skills do you want to learn?",
     helper: "This is how Orbit finds people who can actually help you.",
     type: "chips",
     options: SKILLS,

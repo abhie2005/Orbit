@@ -29,10 +29,10 @@
 --------------------------------------------------------------------------- */
 
 @theme {
-  --color-bg: #efe8da;
-  --color-surface: #f7f2e8;
-  --color-surface-2: #e6ddcb;
-  --color-line: #cabfa7;
+  --color-bg: #f5f2ea;
+  --color-surface: #fbf9f4;
+  --color-surface-2: #ece7dc;
+  --color-line: #d6cfc0;
   /* Interactive borders need 3:1; decorative hairlines use --color-line. */
   --color-line-strong: #9b8f76;
   --color-wine: #6d2a3b;
@@ -55,10 +55,10 @@
 
 :root {
   /* Mirrored as plain vars so SVG and React Flow can read them. */
-  --orbit-bg: #efe8da;
-  --orbit-surface: #f7f2e8;
-  --orbit-surface-2: #e6ddcb;
-  --orbit-line: #cabfa7;
+  --orbit-bg: #f5f2ea;
+  --orbit-surface: #fbf9f4;
+  --orbit-surface-2: #ece7dc;
+  --orbit-line: #d6cfc0;
   --orbit-wine: #6d2a3b;
   --orbit-blue: #1d4ed8;
   --orbit-amber: #9a5b06;
@@ -190,7 +190,7 @@ body {
   --chart-2: #9a5b06; /* amber  */
   --chart-3: #1d4ed8; /* blue   */
   --chart-4: #0f766e; /* teal   */
-  --chart-track: #e6ddcb;
+  --chart-track: #ece7dc;
 }
 
 /* ---------------------------------------------------------------------------

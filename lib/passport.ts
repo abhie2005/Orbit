@@ -84,7 +84,7 @@ export const AVATAR_FILLS = [
 ] as const;
 
 const AVATAR_INK = "#15161a";
-const AVATAR_PAPER = "#f7f2e8";
+const AVATAR_PAPER = "#fbf9f4";
 
 function relativeLuminance(hex: string): number {
   const v = hex.replace("#", "");

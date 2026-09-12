@@ -136,7 +136,8 @@ const pts = Object.values(positions);
 for (let i = 0; i < pts.length; i += 1) {
   for (let j = i + 1; j < pts.length; j += 1) {
     const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
-    assert.ok(d > 115, `two nodes are only ${Math.round(d)}px apart — labels will collide`);
+    // Threshold tracks NODE_SIZE (52) plus room for the label chip beneath it.
+    assert.ok(d > 92, `two nodes are only ${Math.round(d)}px apart — labels will collide`);
   }
 }
 

@@ -29,7 +29,7 @@ export function OrbitAvatar({
   // disc must fill the box itself.
   const core = size * (showRings ? 0.28 : 0.46);
   const shouldSpin = animate && !reduceMotion && showRings;
-  const ink = "#15161a";
+  const ink = "#221a1e";
 
   return (
     <div style={{ width: size, height: size }} className="relative shrink-0">

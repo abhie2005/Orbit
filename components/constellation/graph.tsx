@@ -6,14 +6,18 @@ import {
   Controls,
   ReactFlow,
   ReactFlowProvider,
+  useNodesState,
   useReactFlow,
+  type Node,
   type EdgeMouseHandler,
+  type OnNodeDrag,
   type NodeMouseHandler,
 } from "@xyflow/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ConnectionEdge as ConnectionEdgeComponent } from "./connection-edge";
 import { CATEGORY_GLYPH, type ConnectionEdge, type StudentNode } from "./graph-types";
 import { NODE_SIZE, StudentNode as StudentNodeComponent } from "./student-node";
+import { usePhysics } from "./use-physics";
 import { EDGE_CATEGORIES } from "@/lib/matching";
 import { layoutConstellation } from "@/lib/layout";
 import { buildPassport } from "@/lib/passport";
@@ -57,6 +61,9 @@ function GraphInner({
 }: GraphProps) {
   const { setCenter, fitView } = useReactFlow();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
   /**
    * What the view is focused on. Selection wins over hover so a chosen student
@@ -93,7 +100,7 @@ function GraphInner({
     return set;
   }, [focusId, visibleConnections]);
 
-  const nodes: StudentNode[] = useMemo(
+  const derivedNodes: StudentNode[] = useMemo(
     () =>
       students.map((record, index) => {
         const id = record.student.id;
@@ -121,6 +128,22 @@ function GraphInner({
       }),
     [students, positions, neighbourIds, filteredIds, currentStudentId, selectedStudentId, focusId],
   );
+
+  const [nodes, setNodes, onNodesChange] = useNodesState<StudentNode>([]);
+
+  /**
+   * Sync derived DATA (focus, dimming, filter) into node state without ever
+   * clobbering positions — those belong to the drag and the physics loop.
+   */
+  useEffect(() => {
+    setNodes((prev) => {
+      const prevPositions = new Map(prev.map((n) => [n.id, n.position]));
+      return derivedNodes.map((n) => ({
+        ...n,
+        position: prevPositions.get(n.id) ?? n.position,
+      }));
+    });
+  }, [derivedNodes, setNodes]);
 
   const edges: ConnectionEdge[] = useMemo(
     () =>
@@ -163,6 +186,28 @@ function GraphInner({
     }
   }, [selectedStudentId, positions, setCenter, fitView]);
 
+  const physics = usePhysics({
+    seedPositions: positions,
+    connections: visibleConnections,
+    // Honour reduced motion: the graph stays draggable, it just does not drift.
+    enabled: !prefersReducedMotion,
+    nodeOffset: NODE_SIZE / 2,
+    setNodes: setNodes as unknown as React.Dispatch<React.SetStateAction<Node[]>>,
+  });
+
+  const handleDragStart: OnNodeDrag<StudentNode> = useCallback(
+    (_e, node) => physics.onDragStart(node.id),
+    [physics],
+  );
+  const handleDrag: OnNodeDrag<StudentNode> = useCallback(
+    (_e, node) => physics.onDrag(node.id, node.position),
+    [physics],
+  );
+  const handleDragStop: OnNodeDrag<StudentNode> = useCallback(
+    (_e, node) => physics.onDragStop(node.id),
+    [physics],
+  );
+
   const handleNodeEnter: NodeMouseHandler<StudentNode> = useCallback(
     (_event, node) => setHoveredId(node.id),
     [],
@@ -182,11 +227,15 @@ function GraphInner({
     <ReactFlow
       nodes={nodes}
       edges={edges}
+      onNodesChange={onNodesChange}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       onNodeClick={handleNodeClick}
       onNodeMouseEnter={handleNodeEnter}
       onNodeMouseLeave={handleNodeLeave}
+      onNodeDragStart={handleDragStart}
+      onNodeDrag={handleDrag}
+      onNodeDragStop={handleDragStop}
       onEdgeClick={handleEdgeClick}
       onPaneClick={() => {
         onSelectStudent(null);

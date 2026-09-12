@@ -9,7 +9,7 @@ import type { StudentNode } from "./graph-types";
  * Every node is EXACTLY the same size. This is a product invariant, not a
  * styling choice — size must never encode how connected someone is (spec §7.6).
  */
-export const NODE_SIZE = 72;
+export const NODE_SIZE = 52;
 
 export function StudentNode({ data, selected }: NodeProps<StudentNode>) {
   const { passport, isCurrent, dimmed, focused, index } = data;

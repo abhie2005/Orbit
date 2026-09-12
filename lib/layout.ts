@@ -28,8 +28,8 @@ export function layoutConstellation(
   edges: readonly LayoutEdge[],
   options: { width?: number; height?: number } = {},
 ): Record<string, Point> {
-  const width = options.width ?? 1000;
-  const height = options.height ?? 700;
+  const width = options.width ?? 1300;
+  const height = options.height ?? 900;
   const cx = width / 2;
   const cy = height / 2;
 
