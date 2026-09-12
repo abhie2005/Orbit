@@ -1,14 +1,15 @@
 import Link from "next/link";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-type Tone = "violet" | "blue" | "amber" | "green" | "neutral";
+type Tone = "wine" | "blue" | "amber" | "green" | "neutral";
 
+/** Brutalist tags: ink rule, flat fill, square. Colour is never the only cue. */
 const TONE_RING: Record<Tone, string> = {
-  violet: "border-violet/40 bg-violet/10 text-violet",
-  blue: "border-blue/40 bg-blue/10 text-blue",
-  amber: "border-amber/40 bg-amber/10 text-amber",
-  green: "border-green/40 bg-green/10 text-green",
-  neutral: "border-line bg-surface-2 text-muted",
+  wine: "border-ink bg-wine/12 text-wine",
+  blue: "border-ink bg-blue/12 text-blue",
+  amber: "border-ink bg-amber/12 text-amber",
+  green: "border-ink bg-green/12 text-green",
+  neutral: "border-ink bg-surface-2 text-ink",
 };
 
 export function Card({
@@ -21,20 +22,13 @@ export function Card({
   as?: "div" | "section" | "article" | "li";
 }) {
   return (
-    <Tag
-      className={`rounded-card border border-line/80 bg-surface/70 backdrop-blur-sm ${className}`}
-    >
-      {children}
-    </Tag>
+    <Tag className={`brut brut-shadow ${className}`}>{children}</Tag>
   );
 }
 
+/** A slab, not a whisper — the label is a filled block of ink. */
 export function SectionLabel({ children }: { children: ReactNode }) {
-  return (
-    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-      {children}
-    </p>
-  );
+  return <p className="brut-label">{children}</p>;
 }
 
 export function Tag({
@@ -48,7 +42,7 @@ export function Tag({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${TONE_RING[tone]} ${className}`}
+      className={`inline-flex items-center gap-1.5 border-2 px-3 py-1 text-sm font-medium ${TONE_RING[tone]} ${className}`}
     >
       {children}
     </span>
@@ -56,12 +50,12 @@ export function Tag({
 }
 
 const BUTTON_BASE =
-  "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-base font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40";
+  "brut-press inline-flex items-center justify-center gap-2 border-2 border-ink px-6 py-3 text-base font-bold uppercase tracking-wide disabled:cursor-not-allowed";
 
 const BUTTON_VARIANT = {
-  primary: "bg-violet text-white hover:bg-violet/85",
-  secondary: "border border-line bg-surface-2 text-ink hover:border-blue/60 hover:bg-surface",
-  ghost: "text-muted hover:text-ink",
+  primary: "bg-wine text-bg brut-shadow-sm",
+  secondary: "bg-surface text-ink brut-shadow-sm",
+  ghost: "border-transparent bg-transparent text-ink shadow-none hover:bg-surface-2",
 } as const;
 
 export type ButtonVariant = keyof typeof BUTTON_VARIANT;
@@ -72,10 +66,7 @@ export function Button({
   ...props
 }: ComponentPropsWithoutRef<"button"> & { variant?: ButtonVariant }) {
   return (
-    <button
-      {...props}
-      className={`${BUTTON_BASE} ${BUTTON_VARIANT[variant]} ${className}`}
-    />
+    <button {...props} className={`${BUTTON_BASE} ${BUTTON_VARIANT[variant]} ${className}`} />
   );
 }
 

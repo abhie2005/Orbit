@@ -42,7 +42,7 @@ export function DashboardView() {
         </div>
         <Link
           href="/constellation"
-          className="rounded-full border border-line px-4 py-2 text-sm text-muted transition-colors hover:border-blue/60 hover:text-ink"
+          className="rounded-none brut-press brut-shadow-sm border-2 border-ink bg-surface px-4 py-2 text-sm font-bold uppercase tracking-wide text-ink"
         >
           Open the constellation
         </Link>
@@ -64,7 +64,7 @@ export function DashboardView() {
           label="Students with a connection"
           value={`${Math.round(insights.connectedShare * 100)}%`}
           detail="Have at least one confirmed introduction"
-          accent="var(--orbit-violet)"
+          accent="var(--orbit-wine)"
         />
         <StatTile
           label="Belonging agreement"

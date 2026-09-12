@@ -80,7 +80,7 @@ export function PassportReveal() {
 
           <ul className="mt-5 space-y-4">
             {suggestions.map((suggestion) => (
-              <li key={suggestion.name} className="border-l-2 border-violet/50 pl-3.5">
+              <li key={suggestion.name} className="border-l-2 border-wine/50 pl-3.5">
                 <p className="font-medium text-ink">{suggestion.name}</p>
                 <ul className="mt-1 space-y-1">
                   {suggestion.lines.map((line) => (

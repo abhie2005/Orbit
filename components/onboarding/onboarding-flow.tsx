@@ -65,7 +65,7 @@ export function OnboardingFlow() {
       </div>
 
       <div
-        className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface-2"
+        className="mt-3 h-1.5 w-full overflow-hidden rounded-none bg-surface-2"
         role="progressbar"
         aria-valuemin={1}
         aria-valuemax={totalSteps}
@@ -73,7 +73,7 @@ export function OnboardingFlow() {
         aria-label="Onboarding progress"
       >
         <motion.div
-          className="h-full rounded-full bg-violet"
+          className="h-full rounded-none bg-wine"
           initial={false}
           animate={{ width: `${((step + 1) / totalSteps) * 100}%` }}
           transition={transition}
@@ -117,7 +117,7 @@ export function OnboardingFlow() {
         </motion.div>
       </AnimatePresence>
 
-      <div className="mt-8 flex items-center justify-between gap-3 border-t border-line/70 pt-6">
+      <div className="mt-8 flex items-center justify-between gap-3 border-t-2 border-ink pt-6">
         <Button
           variant="ghost"
           className="px-4 py-2 text-sm"
@@ -188,7 +188,7 @@ function IdentityStep({
             onChange={(e) => onName(e.target.value)}
             autoComplete="off"
             placeholder="Abhi"
-            className="mt-2 w-full rounded-2xl border border-line bg-surface-2 px-4 py-3.5 text-lg text-ink placeholder:text-muted/40"
+            className="mt-2 w-full rounded-none border-2 border-ink bg-surface-2 px-4 py-3.5 text-lg text-ink placeholder:text-muted/40"
           />
         </div>
 
@@ -203,7 +203,7 @@ function IdentityStep({
             onChange={(e) => onPronouns(e.target.value)}
             autoComplete="off"
             placeholder="they/them"
-            className="mt-2 w-full rounded-2xl border border-line bg-surface-2 px-4 py-3.5 text-ink placeholder:text-muted/40"
+            className="mt-2 w-full rounded-none border-2 border-ink bg-surface-2 px-4 py-3.5 text-ink placeholder:text-muted/40"
           />
         </div>
       </div>
@@ -260,7 +260,7 @@ function QuestionStep({
             rows={3}
             aria-describedby={helperId}
             aria-label={question.prompt}
-            className="w-full rounded-2xl border border-line bg-surface-2 px-4 py-3.5 text-ink placeholder:text-muted/40"
+            className="w-full rounded-none border-2 border-ink bg-surface-2 px-4 py-3.5 text-ink placeholder:text-muted/40"
           />
         ) : question.key === "projectRoles" ? (
           <RoleCards values={values} onChange={onChange} describedBy={helperId} />
@@ -303,10 +303,10 @@ function RoleCards({
         return (
           <label
             key={role}
-            className={`cursor-pointer rounded-2xl border px-4 py-3.5 transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-3 focus-within:outline-blue ${
+            className={`cursor-pointer rounded-none border px-4 py-3.5 transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-3 focus-within:outline-blue ${
               selected
-                ? "border-violet bg-violet/15"
-                : "border-line bg-surface-2 hover:border-blue/50"
+                ? "border-wine bg-wine/15"
+                : "border-ink bg-surface-2 hover:border-blue/50"
             }`}
           >
             <input
@@ -372,7 +372,7 @@ function ReviewStep({
         <button
           type="button"
           onClick={onAddBonus}
-          className="mt-7 w-full rounded-2xl border border-dashed border-line px-4 py-3.5 text-sm text-muted transition-colors hover:border-blue/60 hover:text-ink"
+          className="mt-7 w-full rounded-none border border-dashed border-ink px-4 py-3.5 text-sm text-muted transition-colors hover:border-blue/60 hover:text-ink"
         >
           Add {BONUS_QUESTIONS.length} more optional questions for better matches
         </button>

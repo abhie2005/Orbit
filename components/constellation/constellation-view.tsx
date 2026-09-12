@@ -92,7 +92,7 @@ export function ConstellationView() {
           <div
             role="tablist"
             aria-label="Constellation view mode"
-            className="flex rounded-full border border-line bg-surface-2 p-1"
+            className="flex rounded-none border-2 border-ink bg-surface-2 p-1"
           >
             {(["graph", "list"] as const).map((value) => (
               <button
@@ -100,8 +100,8 @@ export function ConstellationView() {
                 role="tab"
                 aria-selected={mode === value}
                 onClick={() => setMode(value)}
-                className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
-                  mode === value ? "bg-violet text-white" : "text-muted hover:text-ink"
+                className={`rounded-none px-4 py-1.5 text-sm transition-colors ${
+                  mode === value ? "bg-wine text-white" : "text-muted hover:text-ink"
                 }`}
               >
                 {value === "graph" ? "Constellation" : "List"}
@@ -110,7 +110,7 @@ export function ConstellationView() {
           </div>
           <Link
             href="/professor/dashboard"
-            className="rounded-full border border-line px-4 py-2 text-sm text-muted transition-colors hover:border-blue/60 hover:text-ink"
+            className="rounded-none brut-press brut-shadow-sm border-2 border-ink bg-surface px-4 py-2 text-sm font-bold uppercase tracking-wide text-ink"
           >
             Professor view
           </Link>
@@ -126,10 +126,10 @@ export function ConstellationView() {
             key={tag}
             onClick={() => setFilterTag(filterTag === tag ? null : tag)}
             aria-pressed={filterTag === tag}
-            className={`shrink-0 snap-start rounded-full border px-3 py-1.5 text-sm transition-colors ${
+            className={`shrink-0 snap-start rounded-none border px-3 py-1.5 text-sm transition-colors ${
               filterTag === tag
                 ? "border-blue bg-blue/15 text-blue"
-                : "border-line bg-surface-2 text-muted hover:border-blue/50 hover:text-ink"
+                : "border-ink bg-surface-2 text-muted hover:border-blue/50 hover:text-ink"
             }`}
           >
             {tag}
@@ -138,7 +138,7 @@ export function ConstellationView() {
         {filterTag ? (
           <button
             onClick={() => setFilterTag(null)}
-            className="shrink-0 rounded-full px-3 py-1.5 text-sm text-muted underline underline-offset-4 hover:text-ink"
+            className="shrink-0 rounded-none px-3 py-1.5 text-sm text-muted underline underline-offset-4 hover:text-ink"
           >
             Clear
           </button>
@@ -180,7 +180,7 @@ export function ConstellationView() {
             )}
           </div>
 
-          <div className="border-t border-line/70 px-5 py-3.5">
+          <div className="border-t-2 border-ink px-5 py-3.5">
             <Legend />
           </div>
         </Card>
@@ -294,7 +294,7 @@ function TagRow({ title, items }: { title: string; items: string[] }) {
         {items.map((item) => (
           <li
             key={item}
-            className="rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-xs text-ink"
+            className="rounded-none border-2 border-ink bg-surface-2 px-2.5 py-0.5 text-xs text-ink"
           >
             {item}
           </li>

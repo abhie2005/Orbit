@@ -25,9 +25,9 @@ export function ConnectionEdge({
   const dimmed = data?.dimmed ?? false;
   const highlighted = data?.highlighted ?? false;
 
-  // Paper needs a higher resting opacity than the old dark canvas did.
-  const opacity = dimmed ? 0.09 : highlighted || selected ? 1 : 0.58;
-  const width = selected ? 3.4 : highlighted ? 2.6 : confirmed ? 2 : 1.5;
+  // Brutalism keeps lines solid: hierarchy comes from stroke weight, not fade.
+  const opacity = dimmed ? 0.12 : highlighted || selected ? 1 : 0.78;
+  const width = selected ? 4.5 : highlighted ? 3.2 : confirmed ? 2.6 : 1.8;
 
   return (
     <>
@@ -38,9 +38,8 @@ export function ConnectionEdge({
           stroke: color,
           strokeWidth: width,
           strokeDasharray: confirmed ? undefined : "7 7",
-          strokeLinecap: "round",
+          strokeLinecap: "butt",
           opacity,
-          filter: selected || highlighted ? `drop-shadow(0 0 6px ${color})` : undefined,
           transition: "opacity 240ms ease, stroke-width 180ms ease",
         }}
       />
@@ -53,7 +52,7 @@ export function ConnectionEdge({
               borderColor: color,
               color,
             }}
-            className="pointer-events-none absolute rounded-full border bg-[color:var(--orbit-surface)] px-2.5 py-1 text-[0.7rem] font-medium"
+            className="pointer-events-none absolute rounded-none border bg-[color:var(--orbit-surface)] px-2.5 py-1 text-[0.7rem] font-medium"
           >
             <span aria-hidden="true">{data?.glyph} </span>
             {data?.categoryLabel}

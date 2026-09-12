@@ -17,14 +17,14 @@ const NODES = [
 ];
 
 const EDGES: { from: number; to: number; color: string; dash?: string }[] = [
-  { from: 0, to: 1, color: "var(--orbit-violet)" },
+  { from: 0, to: 1, color: "var(--orbit-wine)" },
   { from: 1, to: 2, color: "var(--orbit-blue)" },
   { from: 2, to: 3, color: "var(--orbit-amber)", dash: "1 6" },
-  { from: 3, to: 4, color: "var(--orbit-violet)" },
+  { from: 3, to: 4, color: "var(--orbit-wine)" },
   { from: 4, to: 5, color: "var(--orbit-green)", dash: "2 4 8 4" },
   { from: 5, to: 0, color: "var(--orbit-blue)" },
   { from: 6, to: 0, color: "var(--orbit-amber)", dash: "1 6" },
-  { from: 6, to: 3, color: "var(--orbit-violet)", dash: "10 5" },
+  { from: 6, to: 3, color: "var(--orbit-wine)", dash: "10 5" },
   { from: 6, to: 1, color: "var(--orbit-blue)" },
 ];
 
@@ -37,10 +37,7 @@ export function HeroConstellation() {
       className="h-auto w-full max-w-md"
     >
       <defs>
-        <radialGradient id="orbit-node-fill" cx="35%" cy="30%">
-          <stop offset="0%" stopColor="#8b6ae8" />
-          <stop offset="100%" stopColor="#4c1d95" />
-        </radialGradient>
+        {/* No gradient: brutalism uses flat fills with a hard ink rule. */}
       </defs>
 
       {EDGES.map((edge, i) => {
@@ -54,10 +51,10 @@ export function HeroConstellation() {
             x2={b.x}
             y2={b.y}
             stroke={edge.color}
-            strokeWidth={1.75}
+            strokeWidth={2.25}
             strokeDasharray={edge.dash}
-            strokeLinecap="round"
-            opacity={0.85}
+            strokeLinecap="butt"
+            opacity={1}
           />
         );
       })}
@@ -70,9 +67,9 @@ export function HeroConstellation() {
             cx={node.x}
             cy={node.y}
             r={16}
-            fill="url(#orbit-node-fill)"
-            stroke="rgba(21,22,26,0.28)"
-            strokeWidth={1}
+            fill="var(--orbit-wine)"
+            stroke="var(--orbit-ink)"
+            strokeWidth={2}
           />
           <text
             x={node.x}
@@ -80,7 +77,7 @@ export function HeroConstellation() {
             textAnchor="middle"
             fontSize={13}
             fontWeight={600}
-            fill="#f7f2e8"
+            fill="var(--orbit-bg)"
           >
             {node.label}
           </text>

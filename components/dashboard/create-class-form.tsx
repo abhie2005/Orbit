@@ -47,7 +47,7 @@ export function CreateClassForm() {
           </ButtonLink>
         </div>
 
-        <p className="mt-7 border-t border-line/70 pt-5 text-xs leading-relaxed text-muted">
+        <p className="mt-7 border-t-2 border-ink pt-5 text-xs leading-relaxed text-muted">
           Your class starts empty, so the constellation will be empty until
           students join.{" "}
           <button
@@ -139,7 +139,7 @@ export function CreateClassForm() {
           />
         </Field>
 
-        <div className="rounded-2xl border border-line bg-bg/40 p-4">
+        <div className="rounded-none border-2 border-ink bg-bg/40 p-4">
           <p className="text-sm font-medium text-ink">Onboarding questions</p>
           <p className="mt-1.5 text-xs leading-relaxed text-muted">
             {CORE_QUESTIONS.length} core questions, plus {BONUS_QUESTIONS.length}{" "}
@@ -148,7 +148,7 @@ export function CreateClassForm() {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-amber/35 bg-amber/10 p-4">
+        <div className="rounded-none border border-amber/35 bg-amber/10 p-4">
           <p className="text-xs leading-relaxed text-amber">
             Creating a class replaces the seeded demo class on this device. You can
             restore it at any time with the reset control.
@@ -167,7 +167,7 @@ export function CreateClassForm() {
 }
 
 const INPUT =
-  "mt-2 w-full rounded-2xl border border-line bg-surface-2 px-4 py-3 text-ink placeholder:text-muted/40";
+  "mt-2 w-full rounded-none border-2 border-ink bg-surface-2 px-4 py-3 text-ink placeholder:text-muted/40";
 
 function Field({
   label,

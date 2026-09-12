@@ -1,7 +1,7 @@
 # Orbit — Build Status
 
 **Last updated:** 2026-09-12 — session 1 (Claude Code)
-**Phase:** M7 — feature-complete; full paper theme applied
+**Phase:** M7 — feature-complete; brutalist paper theme applied
 **Demo runnable:** ✅ end to end, verified by script
 **Build passing:** ✅ `npm run verify`
 **Demo path passing:** ✅ `npm run check:demo` — **15/15**
@@ -109,7 +109,7 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 
 | File | Purpose |
 | --- | --- |
-| `scripts/check-logic.ts` | Asserts graph shape, layout spacing, and avatar-initials contrast. Run after touching matching, layout, or the palette. |
+| `scripts/check-logic.ts` | Asserts graph shape, layout spacing, avatar-fill palette and initials contrast. Run after touching matching, layout, or the palette. |
 | `scripts/demo-check.mjs` | Walks the demo in Chrome and asserts every DoD item. Run before presenting. |
 
 ## 6. Next up (in priority order)
@@ -139,9 +139,12 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | Layout tuned to 130px minimum separation | Measured, not guessed — `check-logic.ts` fails the build if nodes get closer. |
 | Dev port pinned to 3210 | Port 3000 was already taken on this machine and Next silently migrated between ports mid-session. "Which port is it on?" is not a question to answer mid-demo. |
 | React Flow attribution left visible | Hiding it requires a Pro licence. Not worth it for a hackathon. |
+| **Brutalist visual system** | Abhi's direction. Square corners everywhere (`--radius-card: 0`), 2px ink rules instead of hairlines, hard unblurred offset shadows (`--shadow-hard`), flat fills with no gradients, an exposed 48px grid, slab section labels, and buttons that physically depress on `:active`. Utility classes `.brut`, `.brut-shadow`, `.brut-press`, `.brut-label` live in `app/globals.css`. |
+| Purple replaced by wine `#6D2A3B` | Abhi's direction. The token was **renamed** `violet` → `wine` across all 13 files rather than left as a `violet` variable holding a red — that would mislead the next agent. |
+| Avatar fills use a fixed 10-colour palette | The old continuous hue wheel produced stray purples and pastels that fought the system. `AVATAR_FILLS` in `lib/passport.ts` is a restricted on-brand set; `check:logic` asserts every fill clears 4.5:1 against its initials (worst 4.64:1) and that every seeded student lands on-palette. |
 | **Whole product switched to the paper theme** | Abhi asked for the passport's card-stock look across the entire app. This overrides spec §12's dark palette and the previous AGENTS.md lock — recorded here so it is not "fixed" back by a later agent. `--color-*` tokens in `app/globals.css` are the single source; almost nothing hardcodes colour. |
 | Edge-category hues re-derived for paper | Spec §12's values land at **1.7-1.9:1** on cream — unreadable. Same four hue identities, re-derived and measured: blue `#1A5FA8` 5.80:1, violet `#6D33D6` 6.08:1, amber `#9A5B06` 4.86:1, green `#0E7D57` 4.60:1 (vs `--color-surface`). Category is still never carried by colour alone — glyph + label + line pattern all remain. |
-| Avatar initials pick their own colour | Orb hue is derived from the student id, so a fixed text colour left some students' initials unreadable. `avatarTextColor()` in `lib/passport.ts` compares the gradient midpoint's luminance against ink and paper and picks the better. `check:logic` now fails below 3:1 — worst case is currently 4.24:1. |
+| Avatar initials pick their own colour | `avatarTextColor()` in `lib/passport.ts` compares each fill against ink and paper and takes the better. `check:logic` fails below 4.5:1. |
 | Chart ramp is the accent set itself | On paper the UI accents are already dark enough to serve as chart fills, so a legend swatch and the bar it labels are the same colour. No separate `--chart-*` hues to drift. |
 | Passport is a paper ID card, the one light surface in Orbit | Modelled on the reference cards Abhi supplied: paper stock, dashed cut line, boxed typewriter fields, sprayed wordmark, rubber stamp, barcode, handwritten signature, two-sided flip. Now that the whole app is paper, the card keeps its own lighter stock (`--paper #fbf7ef` vs page `#efe8da`) plus a heavier shadow so it still lifts off the page as an object. |
 | Landing rebuilt in Mindloop's *design language*, not its code | Abhi referenced hirael.com's Mindloop template. That is a commercial product; its markup was not copied. The editorial composition (oversized type, per-word manifesto reveal, card grid) is reimplemented from scratch in Orbit's locked dark palette. Spec §11 hero copy is preserved verbatim. |
@@ -151,7 +154,11 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 
 ## 8. Blockers
 
-**None blocking.** One operational hazard worth knowing:
+**None blocking.** One environment quirk: macOS/iCloud keeps creating `"* 2.ts"`
+duplicate files under `.next/types/`, which breaks `tsc` with duplicate-identifier
+errors. `tsconfig.json` now excludes `**/* 2.ts*`. If typecheck fails oddly,
+`rm -rf .next && npm run build` regenerates the Next-generated types.
+ One operational hazard worth knowing:
 
 > ⚠️ **Do not run two agents against this working tree at once.** During this
 > session a second Claude Code session (`orbit-84`) was editing the same files

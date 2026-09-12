@@ -14,7 +14,7 @@ export function DemoReset() {
       <button
         type="button"
         onClick={() => setConfirming(true)}
-        className="rounded-full border border-line px-3.5 py-1.5 text-xs text-muted transition-colors hover:border-amber/60 hover:text-amber"
+        className="rounded-none brut-press brut-shadow-sm border-2 border-ink bg-surface px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-ink"
       >
         Reset demo
       </button>
@@ -29,14 +29,14 @@ export function DemoReset() {
           resetDemo();
           router.push("/");
         }}
-        className="rounded-full border border-amber/60 bg-amber/10 px-3.5 py-1.5 text-xs text-amber"
+        className="rounded-none border border-amber/60 bg-amber/10 px-3.5 py-1.5 text-xs text-amber"
       >
         Confirm reset
       </button>
       <button
         type="button"
         onClick={() => setConfirming(false)}
-        className="rounded-full px-2 py-1.5 text-xs text-muted hover:text-ink"
+        className="rounded-none px-2 py-1.5 text-xs text-muted hover:text-ink"
       >
         Cancel
       </button>

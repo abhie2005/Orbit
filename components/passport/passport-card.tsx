@@ -66,7 +66,7 @@ export function PassportCard({
         <button
           type="button"
           onClick={() => setFace(face === "front" ? "back" : "front")}
-          className="rounded-full border border-line bg-surface-2 px-4 py-2 text-sm text-muted transition-colors hover:border-blue/60 hover:text-ink"
+          className="rounded-none border-2 border-ink bg-surface-2 px-4 py-2 text-sm text-muted transition-colors hover:border-blue/60 hover:text-ink"
         >
           {face === "front" ? "Turn the card over →" : "← Back to the front"}
         </button>
@@ -108,7 +108,7 @@ function PassportFront({
   return (
     <article
       aria-labelledby={titleId}
-      className="passport relative overflow-hidden rounded-xl p-3 shadow-2xl shadow-black/50 sm:p-4"
+      className="passport relative overflow-hidden rounded-none p-3 brut-shadow sm:p-4"
     >
       <span className="passport-cut" aria-hidden="true" />
 
@@ -276,7 +276,7 @@ function PassportBack({
   const { features } = passport;
 
   return (
-    <article className="passport relative h-full overflow-hidden rounded-xl p-3 shadow-2xl shadow-black/50 sm:p-4">
+    <article className="passport relative h-full overflow-hidden rounded-none p-3 brut-shadow sm:p-4">
       <span className="passport-cut" aria-hidden="true" />
 
       <div className="relative flex h-full flex-col p-3 sm:p-4">

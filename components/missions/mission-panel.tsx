@@ -80,7 +80,7 @@ export function MissionPanel({ onFocusStudent }: { onFocusStudent?: (id: string)
       <div className="flex items-center justify-between gap-3">
         <SectionLabel>Connection mission</SectionLabel>
         {justCompleted ? (
-          <span className="rounded-full border border-green/50 bg-green/10 px-2.5 py-0.5 text-[0.65rem] text-green">
+          <span className="rounded-none border border-green/50 bg-green/10 px-2.5 py-0.5 text-[0.65rem] text-green">
             Introduction recorded
           </span>
         ) : null}
@@ -97,11 +97,11 @@ export function MissionPanel({ onFocusStudent }: { onFocusStudent?: (id: string)
           >
             <h2 className="mt-3 text-xl font-semibold tracking-tight">{mission.title}</h2>
 
-            <p className="mt-3 rounded-2xl border border-line bg-bg/40 p-4 text-sm leading-relaxed text-ink">
+            <p className="mt-3 rounded-none border-2 border-ink bg-bg/40 p-4 text-sm leading-relaxed text-ink">
               {mission.prompt}
             </p>
 
-            <div className="mt-4 border-l-2 border-violet/60 pl-3">
+            <div className="mt-4 border-l-2 border-wine/60 pl-3">
               <p className="text-xs uppercase tracking-[0.16em] text-muted">Why them</p>
               <p className="mt-1 text-sm leading-relaxed text-muted">{mission.reason}</p>
             </div>

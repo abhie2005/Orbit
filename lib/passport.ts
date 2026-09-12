@@ -41,7 +41,7 @@ export function buildPassport(student: Student, answers: readonly ProfileAnswer[
     orbit: {
       rings: 2 + Math.floor(r1 * 3), // 2–4 rings
       tilt: Math.round(r2 * 70 - 35), // -35°–35°
-      hue: Math.round(r3 * 360),
+      fill: AVATAR_FILLS[Math.floor(r3 * AVATAR_FILLS.length) % AVATAR_FILLS.length],
       stampRotations: [r4, r5, r6].map((v) => Math.round(v * 10 - 5)),
     },
   };
@@ -62,42 +62,48 @@ export function serialFor(student: Student, courseCode: string): string {
 
 /* -------------------------------------------------------------------------- */
 
-function hslToRgb(h: number, s: number, l: number): [number, number, number] {
-  const c = (1 - Math.abs(2 * l - 1)) * s;
-  const hp = ((h % 360) + 360) % 360 / 60;
-  const x = c * (1 - Math.abs((hp % 2) - 1));
-  const [r1, g1, b1] =
-    hp < 1 ? [c, x, 0]
-    : hp < 2 ? [x, c, 0]
-    : hp < 3 ? [0, c, x]
-    : hp < 4 ? [0, x, c]
-    : hp < 5 ? [x, 0, c]
-    : [c, 0, x];
-  const m = l - c / 2;
-  return [r1 + m, g1 + m, b1 + m];
-}
+/**
+ * Avatar fills. A fixed, restricted palette — brutalism does not do rainbows,
+ * and a continuous hue wheel produced stray purples and washed-out pastels that
+ * fought the wine/blue/amber/teal system.
+ *
+ * Every entry is dark enough that the paper-coloured initials clear 4.5:1, which
+ * `npm run check:logic` asserts.
+ */
+export const AVATAR_FILLS = [
+  "#6d2a3b", // wine
+  "#1d4ed8", // blue
+  "#9a5b06", // amber
+  "#0f766e", // teal
+  "#c2410c", // rust
+  "#1e3a8a", // navy
+  "#146c34", // green
+  "#0e7490", // cyan
+  "#b91c1c", // red
+  "#456b0d", // olive
+] as const;
 
-function relativeLuminance([r, g, b]: [number, number, number]): number {
-  const f = (v: number) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
-  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
-}
-
-const AVATAR_INK = "#0b0f1c";
+const AVATAR_INK = "#15161a";
 const AVATAR_PAPER = "#f7f2e8";
 
+function relativeLuminance(hex: string): number {
+  const v = hex.replace("#", "");
+  const ch = [0, 2, 4].map((i) => parseInt(v.slice(i, i + 2), 16) / 255);
+  const f = (c: number) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+  return 0.2126 * f(ch[0]) + 0.7152 * f(ch[1]) + 0.0722 * f(ch[2]);
+}
+
+export function contrastRatio(a: string, b: string): number {
+  const [la, lb] = [relativeLuminance(a), relativeLuminance(b)];
+  return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+}
+
 /**
- * Initials must stay legible on an orb whose hue is derived from the student
- * id — a deep blue orb and a pale yellow one cannot share a text colour.
- * Picks whichever of ink/paper has the better contrast against the gradient
- * midpoint, so no student ends up with unreadable initials.
+ * Initials take whichever of ink/paper reads better on the given fill, so no
+ * student ends up with unreadable initials.
  */
-export function avatarTextColor(hue: number): string {
-  const midpoint = relativeLuminance(hslToRgb((hue + 20) % 360, 0.75, 0.62));
-  const contrast = (a: number, b: number) =>
-    (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
-  const inkLum = relativeLuminance(hslToRgb(230, 0.47, 0.08));
-  const paperLum = relativeLuminance(hslToRgb(40, 0.43, 0.94));
-  return contrast(midpoint, inkLum) >= contrast(midpoint, paperLum)
-    ? AVATAR_INK
-    : AVATAR_PAPER;
+export function avatarTextColor(fill: string): string {
+  return contrastRatio(fill, AVATAR_PAPER) >= contrastRatio(fill, AVATAR_INK)
+    ? AVATAR_PAPER
+    : AVATAR_INK;
 }

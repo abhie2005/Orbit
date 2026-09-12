@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function SiteHeader({ children }: { children?: React.ReactNode }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b-2 border-ink bg-bg">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-5 py-3.5">
         <Link href="/" className="flex items-center gap-2.5 text-ink">
           <OrbitMark />
@@ -28,7 +28,7 @@ export function OrbitMark({ size = 26 }: { size?: number }) {
         transform="rotate(-28 16 16)"
         opacity="0.85"
       />
-      <circle cx="16" cy="16" r="6" fill="var(--orbit-violet)" />
+      <circle cx="16" cy="16" r="6" fill="var(--orbit-wine)" />
       <circle cx="27" cy="9.5" r="2.6" fill="var(--orbit-amber)" />
     </svg>
   );

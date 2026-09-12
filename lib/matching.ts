@@ -89,7 +89,7 @@ export const EDGE_CATEGORIES: Record<MatchCategory, EdgeCategoryMeta> = {
   complementary_skill: {
     category: "complementary_skill",
     label: "Skill exchange",
-    colorVar: "var(--orbit-violet)",
+    colorVar: "var(--orbit-wine)",
     dashArray: "10 5",
     description: "One of you can teach what the other wants to learn.",
   },

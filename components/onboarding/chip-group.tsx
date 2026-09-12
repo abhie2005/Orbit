@@ -54,12 +54,12 @@ export function ChipGroup({
         return (
           <label
             key={option}
-            className={`cursor-pointer select-none rounded-full border px-4 py-2.5 text-sm transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-3 focus-within:outline-blue ${
+            className={`cursor-pointer select-none rounded-none border px-4 py-2.5 text-sm transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-3 focus-within:outline-blue ${
               isSelected
-                ? "border-violet bg-violet/20 font-medium text-ink"
+                ? "border-wine bg-wine/20 font-medium text-ink"
                 : isDisabled
-                  ? "cursor-not-allowed border-line/60 bg-surface-2/40 text-muted/45"
-                  : "border-line bg-surface-2 text-muted hover:border-blue/50 hover:text-ink"
+                  ? "cursor-not-allowed border-ink bg-surface-2/40 text-muted/45"
+                  : "border-ink bg-surface-2 text-muted hover:border-blue/50 hover:text-ink"
             }`}
           >
             <input

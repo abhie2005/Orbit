@@ -169,7 +169,7 @@ export const QUESTIONS: readonly Question[] = [
   {
     key: "academicInterests",
     prompt: "Which subjects or technologies interest you?",
-    helper: "Pick anything you would happily nerd out about. Up to five.",
+    helper: "Pick anything you would happily nerd out about.",
     type: "chips",
     options: ACADEMIC_INTERESTS,
     usedForMatching: true,

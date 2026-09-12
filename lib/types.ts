@@ -159,7 +159,8 @@ export type Passport = {
   orbit: {
     rings: number;
     tilt: number;
-    hue: number;
+    /** Flat brutalist fill, picked from a fixed on-brand palette. */
+    fill: string;
     stampRotations: number[];
   };
 };

@@ -38,12 +38,12 @@ export function BarList({
                 {item.label}
               </span>
               <span
-                className="h-2.5 w-full overflow-hidden rounded-full"
+                className="h-2.5 w-full overflow-hidden rounded-none"
                 style={{ background: "var(--chart-track)" }}
                 role="presentation"
               >
                 <span
-                  className="block h-full rounded-full"
+                  className="block h-full rounded-none"
                   style={{
                     width: `${Math.max(4, (item.count / max) * 100)}%`,
                     background: colorVar,

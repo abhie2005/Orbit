@@ -50,7 +50,7 @@ export function JoinForm() {
           placeholder="ORBIT7"
           aria-describedby={error ? "join-error" : "join-hint"}
           aria-invalid={error ? true : undefined}
-          className="mt-2 w-full rounded-2xl border border-line bg-surface-2 px-5 py-4 text-center font-mono text-3xl tracking-[0.35em] text-ink placeholder:text-muted/40"
+          className="mt-2 w-full rounded-none border-2 border-ink bg-surface-2 px-5 py-4 text-center font-mono text-3xl tracking-[0.35em] text-ink placeholder:text-muted/40"
         />
 
         {error ? (
@@ -76,7 +76,7 @@ export function JoinForm() {
         </Button>
       </form>
 
-      <p className="mt-6 border-t border-line/70 pt-5 text-xs leading-relaxed text-muted">
+      <p className="mt-6 border-t-2 border-ink pt-5 text-xs leading-relaxed text-muted">
         No account, no email, no password. Orbit stores your answers on this
         device for the demo and nothing is sent anywhere.
       </p>

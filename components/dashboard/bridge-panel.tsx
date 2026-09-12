@@ -89,7 +89,7 @@ export function BridgePanel({
               setGroupSize(Number(e.target.value));
               setOverrides(null);
             }}
-            className="rounded-full border border-line bg-surface-2 px-3 py-1.5 text-ink"
+            className="rounded-none border-2 border-ink bg-surface-2 px-3 py-1.5 text-ink"
           >
             {[2, 3, 4, 5].map((n) => (
               <option key={n} value={n}>
@@ -104,7 +104,7 @@ export function BridgePanel({
         {groups.map((group, index) => (
           <li
             key={group.id}
-            className="rounded-2xl border border-line bg-bg/40 p-4"
+            className="rounded-none border-2 border-ink bg-bg/40 p-4"
             style={{ borderLeftWidth: 3, borderLeftColor: groupColor(index) }}
           >
             <h3 className="text-sm font-semibold text-ink">
@@ -125,7 +125,7 @@ export function BridgePanel({
                       onChange={(e) =>
                         setOverrides((prev) => ({ ...prev, [memberId]: e.target.value }))
                       }
-                      className="rounded-full border border-line bg-surface-2 px-2 py-1 text-xs text-muted"
+                      className="rounded-none border-2 border-ink bg-surface-2 px-2 py-1 text-xs text-muted"
                     >
                       {generated.map((g, i) => (
                         <option key={g.id} value={g.id}>
@@ -138,7 +138,7 @@ export function BridgePanel({
               ))}
             </ul>
 
-            <ul className="mt-3 space-y-1 border-t border-line/70 pt-3">
+            <ul className="mt-3 space-y-1 border-t-2 border-ink pt-3">
               {group.rationale.map((line) => (
                 <li key={line} className="text-xs leading-relaxed text-muted">
                   {line}

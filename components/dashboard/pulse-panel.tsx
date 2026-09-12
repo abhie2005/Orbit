@@ -56,7 +56,7 @@ export function PulsePanel({
       </div>
 
       {before && after ? (
-        <p className="mt-6 rounded-2xl border border-line bg-bg/40 p-4 text-sm leading-relaxed text-muted">
+        <p className="mt-6 rounded-none border-2 border-ink bg-bg/40 p-4 text-sm leading-relaxed text-muted">
           Agreement moved from{" "}
           <span className="font-mono text-ink">
             {Math.round(before.agreeShare * 100)}%
@@ -107,13 +107,13 @@ function PulseRow({
       </div>
 
       <span
-        className="mt-2 block h-3 w-full overflow-hidden rounded-full"
+        className="mt-2 block h-3 w-full overflow-hidden rounded-none"
         style={{ background: "var(--chart-track)" }}
         role="img"
         aria-label={`${label}: ${pct} percent agree, mean ${summary.mean} out of 5, from ${summary.responses} anonymous responses`}
       >
         <span
-          className="block h-full rounded-full"
+          className="block h-full rounded-none"
           style={{ width: `${Math.max(3, pct)}%`, background: colorVar }}
         />
       </span>
@@ -123,7 +123,7 @@ function PulseRow({
         {summary.histogram.map((count, i) => (
           <li
             key={SCALE[i]}
-            className="h-1.5 flex-1 rounded-full"
+            className="h-1.5 flex-1 rounded-none"
             style={{
               background: colorVar,
               opacity: count === 0 ? 0.12 : 0.25 + (count / summary.responses) * 0.75,

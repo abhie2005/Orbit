@@ -45,8 +45,8 @@ export function ListView({
           return (
             <li key={id}>
               <div
-                className={`rounded-2xl border transition-colors ${
-                  isSelected ? "border-blue/60 bg-surface" : "border-line bg-surface/60"
+                className={`rounded-none border transition-colors ${
+                  isSelected ? "border-blue/60 bg-surface" : "border-ink bg-surface/60"
                 }`}
               >
                 <button
@@ -61,7 +61,7 @@ export function ListView({
                         {record.student.displayName}
                       </span>
                       {id === currentStudentId ? (
-                        <span className="rounded-full border border-amber/50 px-2 py-0.5 text-[0.65rem] text-amber">
+                        <span className="rounded-none border border-amber/50 px-2 py-0.5 text-[0.65rem] text-amber">
                           you
                         </span>
                       ) : null}
@@ -86,7 +86,7 @@ export function ListView({
                 </button>
 
                 {isSelected ? (
-                  <div className="border-t border-line/70 px-4 py-3.5">
+                  <div className="border-t-2 border-ink px-4 py-3.5">
                     {own.length === 0 ? (
                       <p className="text-sm text-muted">
                         No suggested connections yet. Orbit only draws a line when it
@@ -105,7 +105,7 @@ export function ListView({
                             <li key={connection.id}>
                               <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-ink">
                                 {names[otherId]}
-                                <span className="rounded-full border border-line px-2 py-0.5 text-[0.65rem] font-normal text-muted">
+                                <span className="rounded-none border-2 border-ink px-2 py-0.5 text-[0.65rem] font-normal text-muted">
                                   <span aria-hidden="true">
                                     {CATEGORY_GLYPH[category]}{" "}
                                   </span>

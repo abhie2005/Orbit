@@ -39,7 +39,7 @@ export function WordReveal({
             key={`${word}-${i}`}
             aria-hidden="true"
             className="inline-block"
-            style={isAccent ? { color: "var(--orbit-violet)" } : undefined}
+            style={isAccent ? { color: "var(--orbit-wine)" } : undefined}
             initial={reduceMotion ? false : { opacity: 0.12, y: "0.25em" }}
             animate={inView || reduceMotion ? { opacity: 1, y: 0 } : undefined}
             transition={{

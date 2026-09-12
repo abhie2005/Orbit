@@ -37,7 +37,7 @@ const FEATURES = [
     label: "Missions",
     title: "One person at a time",
     body: "A name, why them, and a question to open with. Skipping is free and nobody is told.",
-    accent: "text-violet",
+    accent: "text-wine",
   },
   {
     label: "Bridge the class",
@@ -102,7 +102,7 @@ export default function LandingPage() {
         {/* ---------------------------------------------------------------- */}
         {/* Problem                                                           */}
         {/* ---------------------------------------------------------------- */}
-        <section className="border-t border-line/50 px-5 py-24">
+        <section className="border-t-2 border-ink px-5 py-24">
           <div className="mx-auto w-full max-w-6xl">
             <h2 className="max-w-3xl text-balance text-4xl font-semibold leading-[1.08] tracking-tight sm:text-6xl">
               A semester is long.
@@ -115,7 +115,7 @@ export default function LandingPage() {
               exactly where they started.
             </p>
 
-            <div className="mt-14 grid gap-px overflow-hidden rounded-card border border-line/70 bg-line/50 sm:grid-cols-3">
+            <div className="mt-14 grid gap-px overflow-hidden rounded-none border-2 border-ink bg-line/50 sm:grid-cols-3">
               {PROBLEM_CARDS.map((card) => (
                 <article key={card.title} className="bg-bg p-7">
                   <h3 className="text-lg font-semibold">{card.title}</h3>
@@ -133,7 +133,7 @@ export default function LandingPage() {
         {/* ---------------------------------------------------------------- */}
         {/* Manifesto — word-by-word reveal                                   */}
         {/* ---------------------------------------------------------------- */}
-        <section className="border-t border-line/50 px-5 py-28">
+        <section className="border-t-2 border-ink px-5 py-28">
           <div className="mx-auto w-full max-w-5xl">
             <WordReveal
               text="We are building a classroom where every student has one real reason to talk to someone new, where the reason is always said out loud, and where nobody is ever scored, ranked or counted for it."
@@ -146,7 +146,7 @@ export default function LandingPage() {
         {/* ---------------------------------------------------------------- */}
         {/* Features                                                          */}
         {/* ---------------------------------------------------------------- */}
-        <section className="border-t border-line/50 px-5 py-24">
+        <section className="border-t-2 border-ink px-5 py-24">
           <div className="mx-auto w-full max-w-6xl">
             <SectionLabel>What Orbit actually does</SectionLabel>
             <h2 className="mt-4 max-w-2xl text-balance text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl">
@@ -174,13 +174,13 @@ export default function LandingPage() {
         {/* ---------------------------------------------------------------- */}
         {/* Principles                                                        */}
         {/* ---------------------------------------------------------------- */}
-        <section className="border-t border-line/50 px-5 py-24">
+        <section className="border-t-2 border-ink px-5 py-24">
           <div className="mx-auto w-full max-w-6xl">
             <h2 className="max-w-3xl text-balance text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl">
               The rules we refuse to break.
             </h2>
 
-            <dl className="mt-14 divide-y divide-line/60 border-y border-line/60">
+            <dl className="mt-14 divide-y divide-ink border-y-2 border-ink">
               {[
                 [
                   "No popularity, anywhere",
@@ -212,7 +212,7 @@ export default function LandingPage() {
         {/* Closing CTA                                                       */}
         {/* ---------------------------------------------------------------- */}
         <section className="px-5 pb-28 pt-10">
-          <div className="orbit-stars relative mx-auto w-full max-w-6xl overflow-hidden rounded-card border border-line/70 bg-surface/50 px-8 py-20 text-center sm:px-14">
+          <div className="orbit-stars relative mx-auto w-full max-w-6xl overflow-hidden rounded-none border-2 border-ink bg-surface/50 px-8 py-20 text-center sm:px-14">
             <h2 className="text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
               Start your first day.
             </h2>
@@ -230,7 +230,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-line/60 px-5 py-8">
+      <footer className="border-t-2 border-ink px-5 py-8">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 text-sm text-muted">
           <p>Orbit — a hackathon prototype. All student data shown is fictional.</p>
           <p>Not a production system. Not reviewed for FERPA compliance.</p>
