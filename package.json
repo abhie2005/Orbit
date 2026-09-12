@@ -9,7 +9,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "check:logic": "tsx scripts/check-logic.ts",
-    "verify": "npm run typecheck && npm run check:logic && npm run build"
+    "verify": "npm run typecheck && npm run check:logic && npm run build",
+    "check:demo": "node scripts/demo-check.mjs"
   },
   "dependencies": {
     "@xyflow/react": "^12.11.6",

@@ -33,8 +33,8 @@ export function BarList({
       ) : (
         <ul className="mt-3.5 space-y-2.5">
           {items.map((item) => (
-            <li key={item.label} className="grid grid-cols-[9rem_1fr_2.5rem] items-center gap-3">
-              <span className="truncate text-sm text-muted" title={item.label}>
+            <li key={item.label} className="grid grid-cols-[11rem_1fr_2rem] items-center gap-3">
+              <span className="truncate text-[0.8rem] text-muted" title={item.label}>
                 {item.label}
               </span>
               <span

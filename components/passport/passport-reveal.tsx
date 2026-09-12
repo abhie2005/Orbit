@@ -50,7 +50,7 @@ export function PassportReveal() {
   const passport = buildPassport(record.student, record.answers);
 
   return (
-    <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+    <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start">
       <motion.div
         initial={reduceMotion ? false : { opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -60,7 +60,10 @@ export function PassportReveal() {
         <h1 className="mt-3 mb-6 text-3xl font-semibold tracking-tight sm:text-4xl">
           Welcome to the class, {record.student.displayName}.
         </h1>
-        <PassportCard passport={passport} classroom={state.classroom} reveal />
+        {/* Capped width so it reads as a collectible card, not a wide banner. */}
+        <div className="max-w-[34rem]">
+          <PassportCard passport={passport} classroom={state.classroom} reveal />
+        </div>
       </motion.div>
 
       <motion.aside
