@@ -25,15 +25,20 @@ export function ConnectionEdge({
   const dimmed = data?.dimmed ?? false;
   const highlighted = data?.highlighted ?? false;
 
-  // Brutalism keeps lines solid: hierarchy comes from stroke weight, not fade.
-  const opacity = dimmed ? 0.12 : highlighted || selected ? 1 : 0.78;
-  const width = selected ? 4.5 : highlighted ? 3.2 : confirmed ? 2.6 : 1.8;
+  /**
+   * With ~30 edges the graph turns into spaghetti if every line shouts. Resting
+   * lines stay thin and quiet; hierarchy arrives on hover/selection through
+   * stroke WEIGHT, which brutalism is happy with, rather than colour tricks.
+   */
+  const opacity = dimmed ? 0.14 : selected ? 1 : highlighted ? 0.95 : 0.5;
+  const width = selected ? 5 : highlighted ? 3.4 : confirmed ? 2.2 : 1.4;
 
   return (
     <>
       <BaseEdge
         id={id}
         path={path}
+        interactionWidth={22}
         style={{
           stroke: color,
           strokeWidth: width,

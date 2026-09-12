@@ -10,7 +10,7 @@ import {
   type EdgeMouseHandler,
   type NodeMouseHandler,
 } from "@xyflow/react";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ConnectionEdge as ConnectionEdgeComponent } from "./connection-edge";
 import { CATEGORY_GLYPH, type ConnectionEdge, type StudentNode } from "./graph-types";
 import { NODE_SIZE, StudentNode as StudentNodeComponent } from "./student-node";
@@ -56,6 +56,13 @@ function GraphInner({
   onSelectConnection,
 }: GraphProps) {
   const { setCenter, fitView } = useReactFlow();
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  /**
+   * What the view is focused on. Selection wins over hover so a chosen student
+   * stays centred while the pointer wanders.
+   */
+  const focusId = selectedStudentId ?? hoveredId;
 
   const visibleConnections = useMemo(
     () => connections.filter((c) => c.status !== "dismissed"),
@@ -75,20 +82,20 @@ function GraphInner({
     [students, visibleConnections],
   );
 
-  /** Neighbours of the selected student — used to focus the view. */
+  /** Neighbours of the focused student — drives dimming for hover and selection alike. */
   const neighbourIds = useMemo(() => {
-    if (!selectedStudentId) return null;
-    const set = new Set<string>([selectedStudentId]);
+    if (!focusId) return null;
+    const set = new Set<string>([focusId]);
     for (const c of visibleConnections) {
-      if (c.studentAId === selectedStudentId) set.add(c.studentBId);
-      if (c.studentBId === selectedStudentId) set.add(c.studentAId);
+      if (c.studentAId === focusId) set.add(c.studentBId);
+      if (c.studentBId === focusId) set.add(c.studentAId);
     }
     return set;
-  }, [selectedStudentId, visibleConnections]);
+  }, [focusId, visibleConnections]);
 
   const nodes: StudentNode[] = useMemo(
     () =>
-      students.map((record) => {
+      students.map((record, index) => {
         const id = record.student.id;
         const position = positions[id] ?? { x: 0, y: 0 };
         const outOfFocus = neighbourIds ? !neighbourIds.has(id) : false;
@@ -101,6 +108,8 @@ function GraphInner({
             passport: buildPassport(record.student, record.answers),
             isCurrent: id === currentStudentId,
             dimmed: outOfFocus || outOfFilter,
+            focused: id === focusId,
+            index,
           },
           selected: id === selectedStudentId,
           draggable: true,
@@ -110,7 +119,7 @@ function GraphInner({
           height: NODE_SIZE,
         };
       }),
-    [students, positions, neighbourIds, filteredIds, currentStudentId, selectedStudentId],
+    [students, positions, neighbourIds, filteredIds, currentStudentId, selectedStudentId, focusId],
   );
 
   const edges: ConnectionEdge[] = useMemo(
@@ -118,8 +127,7 @@ function GraphInner({
       visibleConnections.map((connection) => {
         const category = connection.reasons[0]?.category ?? "academic";
         const touchesSelection = neighbourIds
-          ? connection.studentAId === selectedStudentId ||
-            connection.studentBId === selectedStudentId
+          ? connection.studentAId === focusId || connection.studentBId === focusId
           : false;
         const passesFilter = filteredIds
           ? filteredIds.has(connection.studentAId) && filteredIds.has(connection.studentBId)
@@ -142,7 +150,7 @@ function GraphInner({
           },
         };
       }),
-    [visibleConnections, neighbourIds, selectedStudentId, selectedConnectionId, filteredIds],
+    [visibleConnections, neighbourIds, focusId, selectedConnectionId, filteredIds],
   );
 
   // Centre on the selected student (spec §7.6), or refit when nothing is chosen.
@@ -154,6 +162,12 @@ function GraphInner({
       fitView({ padding: 0.18, duration: 500 });
     }
   }, [selectedStudentId, positions, setCenter, fitView]);
+
+  const handleNodeEnter: NodeMouseHandler<StudentNode> = useCallback(
+    (_event, node) => setHoveredId(node.id),
+    [],
+  );
+  const handleNodeLeave = useCallback(() => setHoveredId(null), []);
 
   const handleNodeClick: NodeMouseHandler<StudentNode> = (_event, node) => {
     onSelectConnection(null);
@@ -171,6 +185,8 @@ function GraphInner({
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       onNodeClick={handleNodeClick}
+      onNodeMouseEnter={handleNodeEnter}
+      onNodeMouseLeave={handleNodeLeave}
       onEdgeClick={handleEdgeClick}
       onPaneClick={() => {
         onSelectStudent(null);

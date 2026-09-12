@@ -4,8 +4,11 @@ import type { MatchCategory, Passport } from "@/lib/types";
 export type StudentNodeData = {
   passport: Passport;
   isCurrent: boolean;
-  /** Dimmed when a selection or filter excludes this student. */
+  /** Dimmed when a selection, hover or filter excludes this student. */
   dimmed: boolean;
+  /** The hovered or selected student. Never changes node SIZE — only the ring. */
+  focused: boolean;
+  index: number;
   [key: string]: unknown;
 };
 

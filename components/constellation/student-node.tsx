@@ -1,6 +1,7 @@
 "use client";
 
 import { Handle, Position, type NodeProps } from "@xyflow/react";
+import { motion, useReducedMotion } from "framer-motion";
 import { OrbitAvatar } from "@/components/passport/orbit-avatar";
 import type { StudentNode } from "./graph-types";
 
@@ -11,12 +12,30 @@ import type { StudentNode } from "./graph-types";
 export const NODE_SIZE = 72;
 
 export function StudentNode({ data, selected }: NodeProps<StudentNode>) {
-  const { passport, isCurrent, dimmed } = data;
+  const { passport, isCurrent, dimmed, focused, index } = data;
+  const reduceMotion = useReducedMotion();
 
   return (
-    <div
-      className="relative transition-opacity duration-300"
-      style={{ width: NODE_SIZE, height: NODE_SIZE, opacity: dimmed ? 0.2 : 1 }}
+    <motion.div
+      className="relative cursor-pointer"
+      style={{ width: NODE_SIZE, height: NODE_SIZE }}
+      /*
+       * Node entry (spec §12). Only opacity and offset animate — never scale,
+       * because every node must measure the same size at all times.
+       */
+      initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+      animate={{ opacity: dimmed ? 0.2 : 1, y: 0 }}
+      transition={{
+        opacity: {
+          duration: reduceMotion ? 0 : 0.3,
+          delay: reduceMotion ? 0 : Math.min(index, 14) * 0.035,
+        },
+        y: {
+          duration: reduceMotion ? 0 : 0.4,
+          delay: reduceMotion ? 0 : Math.min(index, 14) * 0.035,
+          ease: [0.22, 1, 0.36, 1],
+        },
+      }}
     >
       <Handle
         type="target"
@@ -51,10 +70,13 @@ export function StudentNode({ data, selected }: NodeProps<StudentNode>) {
 
       {/* Absolutely positioned so the node box stays exactly NODE_SIZE wide and
           React Flow's measured size matches the circle it is meant to centre. */}
-      <span data-orbit-label className="pointer-events-none absolute left-1/2 top-full mt-2.5 -translate-x-1/2 whitespace-nowrap rounded-none bg-[color:var(--orbit-surface)]/90 px-2 py-0.5 text-xs font-medium text-ink">
+      <span
+        data-orbit-label
+        className="pointer-events-none absolute left-1/2 top-full mt-2.5 -translate-x-1/2 whitespace-nowrap border-2 border-ink bg-surface px-2 py-0.5 text-xs font-bold text-ink"
+      >
         {passport.student.displayName}
         {isCurrent ? <span className="text-amber"> · you</span> : null}
       </span>
-    </div>
+    </motion.div>
   );
 }
