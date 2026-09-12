@@ -32,6 +32,10 @@ Three verification layers, all green:
 Abhi↔Maya is the strongest edge at 18.5 (the spec's demo story), Aisha is the
 single sparse student with exactly 1 edge, minimum node separation 130px.
 
+**Latest UX addition:** the passport reveal page now offers a browser-side
+"Download my unique passport" export button that saves the currently created
+passport as a self-contained HTML artifact.
+
 ## 2. Milestones
 
 | # | Milestone | Status |

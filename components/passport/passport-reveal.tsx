@@ -6,10 +6,83 @@ import { useEffect, useMemo } from "react";
 import { PassportCard } from "@/components/passport/passport-card";
 import { Button, ButtonLink, Card, SectionLabel } from "@/components/ui/primitives";
 import { explainReasons, rankSuggestionsFor } from "@/lib/matching";
-import { buildPassport } from "@/lib/passport";
+import { buildPassport, serialFor } from "@/lib/passport";
 import { confirmedDegrees } from "@/lib/matching";
 import { deriveFeatures } from "@/lib/privacy";
 import { useOrbit } from "@/lib/store";
+
+function htmlEscape(value: string): string {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function downloadPassportHtml(passport: ReturnType<typeof buildPassport>, classroom: { courseCode: string }) {
+  const student = passport.student;
+  const serial = serialFor(student, classroom.courseCode);
+  const publicFeatures = [
+    ["Can help with", passport.features.academicInterests, passport.features.projectRoles]
+      .flat()
+      .slice(0, 4),
+  ];
+  const answers = [
+    ["Home", passport.home ?? "—"],
+    ["Pronouns", student.pronouns ?? "—"],
+    ["Can help with", passport.features.academicInterests.join(", ") || "—"],
+    ["Would like to learn", passport.features.projectRoles.join(", ") || "—"],
+    ["Movies", passport.features.movieGenres.join(", ") || "—"],
+  ];
+
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${htmlEscape(student.displayName)} Orbit Passport</title>
+<style>
+:root { --paper: #fbf9f4; --ink: #15161a; --muted: #676c72; --rule: #b5a88d; --wine: #6d2a3b; --blue: #1d4ed8; --green: #146c34; --paper-blue: #c7d3e8; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: Arial, Helvetica, sans-serif; color: var(--ink); background: repeating-linear-gradient(45deg, var(--paper), var(--paper) 12px, #f6f3ea 12px, #f6f3ea 24px); }
+.passport { width: min(760px, calc(100vw - 40px)); background: var(--paper); border: 2px solid var(--ink); padding: 22px; box-shadow: 0 12px 0 var(--rule); }
+.kicker { font-family: "Courier New", Courier, monospace; font-size: 12px; letter-spacing: 0.2em; border-bottom: 2px solid var(--ink); padding-bottom: 7px; }
+.title { margin: 16px 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(46px, 7vw, 64px); font-weight: 700; letter-spacing: -0.02em; }
+.meta { display: grid; grid-template-columns: repeat(2, minmax(180px, 1fr)); gap: 16px; border-top: 2px solid var(--rule); padding-top: 16px; }
+.label { color: var(--muted); font-family: "Courier New", Courier, monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; }
+.value { margin-top: 4px; font-size: 16px; font-weight: 700; }
+.serial { font-family: "Courier New", Courier, monospace; color: var(--wine); }
+.stamp { display: inline-block; border: 2px dashed var(--wine); color: var(--wine); padding: 9px 14px; font-weight: 700; transform: rotate(-7deg); }
+</style>
+</head>
+<body>
+<article class="passport">
+  <div class="kicker">ORBIT / PASSPORT</div>
+  <div class="title">${htmlEscape(student.displayName)}</div>
+  <div class="serial">${htmlEscape(serial)}</div>
+  <div class="stamp">UNIQUE PASSPORT</div>
+  <section class="meta">
+    ${answers
+      .map(
+        ([label, value]) => `
+      <div>
+        <div class="label">${htmlEscape(label)}</div>
+        <div class="value">${htmlEscape(value)}</div>
+      </div>
+    `,
+      )
+      .join("")}
+  </section>
+</article>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `orbit-passport-${htmlEscape(student.displayName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""))}.html`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(url);
+}
 
 export function PassportReveal() {
   const router = useRouter();
@@ -109,6 +182,13 @@ export function PassportReveal() {
             onClick={() => router.push("/onboarding")}
           >
             Edit my answers
+          </Button>
+          <Button
+            variant="secondary"
+            className="mt-3 w-full text-sm"
+            onClick={() => downloadPassportHtml(passport, state.classroom)}
+          >
+            Download my unique passport
           </Button>
         </Card>
       </motion.aside>
