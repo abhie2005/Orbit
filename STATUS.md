@@ -1,7 +1,7 @@
 # Orbit — Build Status
 
 **Last updated:** 2026-09-12 — session 1 (Claude Code)
-**Phase:** M7 — feature-complete, polishing
+**Phase:** M7 — feature-complete; passport + landing redesigned
 **Demo runnable:** ✅ end to end, verified by script
 **Build passing:** ✅ `npm run verify`
 **Demo path passing:** ✅ `npm run check:demo` — **15/15**
@@ -96,14 +96,14 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | File | Purpose |
 | --- | --- |
 | `lib/store.ts` | localStorage store via `useSyncExternalStore`; every action lives here |
-| `app/page.tsx` | Landing |
+| `app/page.tsx` | Landing — editorial sections + `components/ui/word-reveal.tsx` |
 | `app/join`, `components/onboarding/join-form.tsx` | Join code |
 | `app/onboarding`, `components/onboarding/onboarding-flow.tsx` | Question flow + chips |
 | `app/passport`, `components/passport/*` | Passport card, orbital avatar, reveal |
 | `app/constellation`, `components/constellation/*` | Graph, custom node/edge, legend, list view |
 | `components/missions/mission-panel.tsx` | One mission at a time, skip is free |
 | `app/professor/create`, `app/professor/dashboard`, `components/dashboard/*` | Professor side |
-| `components/ui/*` | Primitives, header, hero graphic, demo reset |
+| `components/ui/*` | Primitives, header, hero graphic, demo reset, word-reveal |
 
 **Scripts:**
 
@@ -139,6 +139,10 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | Layout tuned to 130px minimum separation | Measured, not guessed — `check-logic.ts` fails the build if nodes get closer. |
 | Dev port pinned to 3210 | Port 3000 was already taken on this machine and Next silently migrated between ports mid-session. "Which port is it on?" is not a question to answer mid-demo. |
 | React Flow attribution left visible | Hiding it requires a Pro licence. Not worth it for a hackathon. |
+| Passport is a paper ID card, the one light surface in Orbit | Modelled on the reference cards Abhi supplied: paper stock, dashed cut line, boxed typewriter fields, sprayed wordmark, rubber stamp, barcode, handwritten signature, two-sided flip. It is a physical artefact the student *receives*, so it reads as card stock against the night sky. Tokens are scoped to `.passport` and must not leak into app chrome. |
+| Landing rebuilt in Mindloop's *design language*, not its code | Abhi referenced hirael.com's Mindloop template. That is a commercial product; its markup was not copied. The editorial composition (oversized type, per-word manifesto reveal, card grid) is reimplemented from scratch in Orbit's locked dark palette. Spec §11 hero copy is preserved verbatim. |
+| Redesign scoped to the landing page only | Mindloop is a light editorial page; Orbit's dark `#090B14` system is locked by spec §12. Restyling the app would have forced a full re-derivation of constellation edge colours for light-background contrast, touching the judged demo path. Abhi chose landing-only. |
+| Skills offered and skills wanted are mutually exclusive in the UI | Listing the same skill in both produces a nonsense match reason ("they want to learn X, a skill they can help with"). Each chip list now hides what the other already claimed. |
 | `read()` persists without notifying listeners | `read` is the `getSnapshot` for `useSyncExternalStore` and runs during render. The original version called `write()` there, which notified subscribers mid-render and produced a React "state update on a component that hasn't mounted yet" warning. Seeding now uses `persist()` (localStorage only, no notify). |
 
 ## 8. Blockers

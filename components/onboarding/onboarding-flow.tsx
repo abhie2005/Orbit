@@ -99,6 +99,7 @@ export function OnboardingFlow() {
           ) : question ? (
             <QuestionStep
               question={question}
+              options={optionsFor(question, answers)}
               values={answers[question.key] ?? []}
               onChange={(values) => setAnswer(question.key, values)}
             />
@@ -210,12 +211,32 @@ function IdentityStep({
   );
 }
 
+/**
+ * Offering a skill and wanting to learn the same skill is contradictory, and it
+ * would produce a nonsense match reason ("they want to learn X, a skill they
+ * can help with"). Each list simply hides what the other already claimed.
+ */
+function optionsFor(question: Question, answers: Answers): readonly string[] {
+  const all = question.options ?? [];
+  if (question.key === "skillsWanted") {
+    const offered = new Set(answers.skillsOffered ?? []);
+    return all.filter((option) => !offered.has(option));
+  }
+  if (question.key === "skillsOffered") {
+    const wanted = new Set(answers.skillsWanted ?? []);
+    return all.filter((option) => !wanted.has(option));
+  }
+  return all;
+}
+
 function QuestionStep({
   question,
+  options,
   values,
   onChange,
 }: {
   question: Question;
+  options: readonly string[];
   values: string[];
   onChange: (next: string[]) => void;
 }) {
@@ -246,7 +267,7 @@ function QuestionStep({
         ) : (
           <ChipGroup
             questionKey={question.key}
-            options={question.options ?? []}
+            options={options}
             selected={values}
             onChange={onChange}
             multiple={question.type === "chips"}
