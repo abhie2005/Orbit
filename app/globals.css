@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* Imported here, not in the component, so the Orbit overrides further down
+   this file come LATER in the cascade and actually win. */
+@import "@xyflow/react/dist/style.css";
 
 /* ---------------------------------------------------------------------------
    Orbit design tokens (spec §12).
@@ -101,9 +104,14 @@ body {
   }
 }
 
-/* React Flow overrides so the graph sits on our sky, not its own canvas. */
+/* React Flow overrides so the graph sits on our sky, not its own canvas.
+   The attribution stays visible — hiding it requires a React Flow Pro licence. */
 .react-flow__attribution {
-  display: none;
+  background: transparent;
+}
+.react-flow__attribution a {
+  color: #55608a;
+  font-size: 9px;
 }
 .react-flow__node:focus-visible,
 .react-flow__node:focus {
@@ -112,4 +120,31 @@ body {
 .react-flow__handle {
   opacity: 0;
   pointer-events: none;
+}
+
+/* React Flow controls, restyled for the night sky. */
+.react-flow__controls {
+  box-shadow: none;
+  gap: 2px;
+  display: flex;
+  flex-direction: column;
+}
+.react-flow__controls-button {
+  background: var(--orbit-surface);
+  border: 1px solid #2a3150;
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  padding: 6px;
+}
+.react-flow__controls-button:hover {
+  background: #1b2138;
+}
+.react-flow__controls-button svg {
+  fill: var(--orbit-muted);
+  max-width: 14px;
+  max-height: 14px;
+}
+.react-flow__controls-button:hover svg {
+  fill: var(--orbit-ink);
 }

@@ -101,3 +101,43 @@ const ba = scorePair(features[1], features[0]);
 assert.equal(ab.baseScore, ba.baseScore, "scorePair must be symmetric");
 
 console.log("\n✅ all logic checks passed\n");
+
+// ---- layout ---------------------------------------------------------------
+
+import { layoutConstellation } from "../lib/layout";
+
+const positions = layoutConstellation(
+  features.map((f) => ({ id: f.id })),
+  connections.map((c) => ({
+    source: c.studentAId,
+    target: c.studentBId,
+    weight: c.score / 6,
+  })),
+);
+
+assert.equal(Object.keys(positions).length, features.length, "every node needs a position");
+for (const [id, p] of Object.entries(positions)) {
+  assert.ok(Number.isFinite(p.x) && Number.isFinite(p.y), `${id} has a non-finite position`);
+}
+
+// Layout must be deterministic and order-independent too.
+const positionsAgain = layoutConstellation(
+  [...features].reverse().map((f) => ({ id: f.id })),
+  connections.map((c) => ({
+    source: c.studentAId,
+    target: c.studentBId,
+    weight: c.score / 6,
+  })),
+);
+assert.deepEqual(positions, positionsAgain, "layout must be deterministic");
+
+// No two students may land on top of each other.
+const pts = Object.values(positions);
+for (let i = 0; i < pts.length; i += 1) {
+  for (let j = i + 1; j < pts.length; j += 1) {
+    const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+    assert.ok(d > 115, `two nodes are only ${Math.round(d)}px apart — labels will collide`);
+  }
+}
+
+console.log("✅ layout checks passed\n");

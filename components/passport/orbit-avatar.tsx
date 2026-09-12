@@ -13,16 +13,23 @@ export function OrbitAvatar({
   passport,
   size = 132,
   animate = true,
+  showRings = true,
 }: {
   passport: Passport;
   size?: number;
   animate?: boolean;
+  /** Rings are a passport flourish. At node scale they blur the circle's edge
+   *  and make it ambiguous which label belongs to which student. */
+  showRings?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
   const { rings, tilt, hue } = passport.orbit;
   const center = size / 2;
-  const core = size * 0.26;
-  const shouldSpin = animate && !reduceMotion;
+  // With rings the core is small and the rings fill the box. Without them the
+  // core must fill the box itself, otherwise the visible circle is half the
+  // node's measured size and its name label appears to float away from it.
+  const core = size * (showRings ? 0.26 : 0.46);
+  const shouldSpin = animate && showRings && !reduceMotion;
 
   return (
     <div style={{ width: size, height: size }} className="relative shrink-0">
@@ -41,8 +48,11 @@ export function OrbitAvatar({
         </defs>
 
         <g transform={`rotate(${tilt} ${center} ${center})`}>
-          {Array.from({ length: rings }).map((_, i) => {
-            const rx = core + (i + 1) * (size * 0.1);
+          {(showRings ? Array.from({ length: rings }) : []).map((_, i) => {
+            // Rings must stay inside the node's own box, otherwise they bleed
+            // over neighbouring students in the constellation.
+            const step = (size / 2 - 2 - core) / rings;
+            const rx = core + (i + 1) * step;
             const ry = rx * (0.32 + i * 0.1);
             return (
               <ellipse
@@ -82,7 +92,7 @@ export function OrbitAvatar({
             style={{
               width: size * 0.07,
               height: size * 0.07,
-              left: center + core + size * 0.1 - size * 0.035,
+              left: center + core + (size / 2 - 2 - core) / 2 - size * 0.035,
               top: center - size * 0.035,
               background: `hsl(${(hue + 180) % 360} 90% 72%)`,
             }}
