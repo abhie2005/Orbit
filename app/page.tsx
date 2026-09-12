@@ -1,5 +1,5 @@
-import { HeroSection } from "@/components/ui/galaxy-interactive-hero-section";
 import { ButtonLink, Card, SectionLabel } from "@/components/ui/primitives";
+import { SiteHeader } from "@/components/ui/site-header";
 import { WordReveal } from "@/components/ui/word-reveal";
 import { DEMO_CLASSROOM } from "@/lib/seed-data";
 
@@ -49,11 +49,46 @@ const FEATURES = [
 export default function LandingPage() {
   return (
     <>
+      <SiteHeader>
+        <ButtonLink href="/professor/dashboard" variant="ghost" className="px-4 py-2 text-sm">
+          Professor view
+        </ButtonLink>
+        <ButtonLink href="/join" variant="secondary" className="px-5 py-2 text-sm">
+          Join a class
+        </ButtonLink>
+      </SiteHeader>
+
       <main className="flex-1">
         {/* ---------------------------------------------------------------- */}
-        {/* Hero — galaxy scene, glass nav, constellation panel over the fold  */}
+        {/* Hero — type only. No graphic, by decision; see STATUS.md.          */}
         {/* ---------------------------------------------------------------- */}
-        <HeroSection joinCode={DEMO_CLASSROOM.joinCode} />
+        <section className="orbit-stars relative mx-auto w-full max-w-6xl px-5 pt-20 pb-28 sm:pt-28 sm:pb-32">
+          <SectionLabel>First-day classroom belonging</SectionLabel>
+          <h1 className="mt-4 max-w-4xl text-balance text-5xl font-semibold leading-[1.03] tracking-tight sm:text-7xl">
+            Find your people
+            <br />
+            in the room.
+          </h1>
+          <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
+            Orbit transforms first-day introductions into student passports and a living
+            classroom constellation.
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center gap-3">
+            <ButtonLink href="/join">Join a class</ButtonLink>
+            <ButtonLink href="/professor/create" variant="secondary">
+              Create a class
+            </ButtonLink>
+          </div>
+
+          <p className="mt-6 text-sm text-muted">
+            Demo class{" "}
+            <span className="font-mono font-semibold tracking-[0.2em] text-blue">
+              {DEMO_CLASSROOM.joinCode}
+            </span>{" "}
+            is preloaded with twelve fictional students.
+          </p>
+        </section>
 
         {/* ---------------------------------------------------------------- */}
         {/* Problem                                                           */}
