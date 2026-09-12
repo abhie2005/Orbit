@@ -1,30 +1,9 @@
 "use client";
 
-import { useMemo, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, type CSSProperties } from "react";
 
-import { recursiveErosionSource } from "./recursive-erosion-utils/recursive-erosion-source";
-
-type FocusRole = "background" | "button" | "visual";
 type EffectMode = "light" | "dark";
-
-type FocusTarget = {
-  selector: string;
-  role: FocusRole;
-};
-
-type EffectDefinition = {
-  title: string;
-  source: string;
-  background: string;
-  targets: readonly FocusTarget[];
-  theme?: {
-    nativeMode?: EffectMode;
-    lightBackground: string;
-    darkBackground: string;
-    invertBackground?: boolean;
-  };
-  hiddenTargets?: readonly string[];
-};
+type Particle = { x: number; y: number; z: number; seed: number };
 
 export type RecursiveErosionBackgroundProps = {
   mode?: EffectMode;
@@ -42,98 +21,123 @@ export const RECURSIVE_EROSION_DEFAULTS = {
   brightness: 1,
 } as const;
 
-const RECURSIVE_EROSION_EFFECT: EffectDefinition = {
-  title: "Recursive Erosion particle sphere background",
-  source: recursiveErosionSource,
-  background: "#0a0908",
-  theme: {
-    lightBackground: "#f4f3f1",
-    darkBackground: "#0a0908",
-  },
-  targets: [{ selector: "#stage", role: "background" }],
-  hiddenTargets: ["#badge", ".sr"],
-};
+const PARTICLE_COUNT = 1_460;
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
 }
 
-function effectBackground(definition: EffectDefinition, mode: EffectMode) {
-  return definition.theme?.[`${mode}Background`] ?? definition.background;
+function buildSphere(): Particle[] {
+  return Array.from({ length: PARTICLE_COUNT }, (_, index) => {
+    const y = 1 - (index / (PARTICLE_COUNT - 1)) * 2;
+    const radius = Math.sqrt(1 - y * y);
+    const theta = GOLDEN_ANGLE * index;
+    return {
+      x: Math.cos(theta) * radius,
+      y,
+      z: Math.sin(theta) * radius,
+      seed: ((index * 73) % 101) / 101,
+    };
+  });
 }
 
-function buildFocusedDocument(definition: EffectDefinition, mode: EffectMode) {
-  const background = effectBackground(definition, mode);
-  const source = definition.source;
-  const targetJson = JSON.stringify(definition.targets).replace(
-    /</g,
-    "\\u003c",
-  );
-  const hiddenTargetJson = JSON.stringify(
-    definition.hiddenTargets ?? [],
-  ).replace(/</g, "\\u003c");
-  const modeJson = JSON.stringify(mode);
-  const focusStyle = `<style data-threeui-focus>
-html, body { width: 100% !important; height: 100% !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; background: ${background} !important; color-scheme: ${mode} !important; }
-body { position: relative !important; display: flex !important; align-items: center !important; justify-content: center !important; }
-body > * { visibility: hidden !important; }
-body[data-threeui-ready] > [data-threeui-role] { visibility: visible !important; }
-[data-threeui-residual] { display: none !important; }
-[data-threeui-hidden] { display: none !important; }
-[data-threeui-role="background"] { position: fixed !important; inset: 0 !important; width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; z-index: 0 !important; opacity: 1 !important; pointer-events: none !important; }
-[data-threeui-role="button"] { position: relative !important; z-index: 2 !important; opacity: 1 !important; flex: none !important; }
-[data-threeui-role="visual"] { position: relative !important; z-index: 1 !important; width: min(100%, 1040px) !important; max-width: 1040px !important; max-height: 100% !important; margin: auto !important; padding: 24px !important; overflow: auto !important; opacity: 1 !important; filter: none !important; }
-</style>`;
-  const focusScript = `<script data-threeui-focus>
-(function () {
-  document.documentElement.dataset.sfMode = ${modeJson};
-  var isolated = false;
-  function isolate() {
-    if (isolated) return;
-    var specs = ${targetJson};
-    var hiddenSelectors = ${hiddenTargetJson};
-    var roots = [];
-    hiddenSelectors.forEach(function (selector) {
-      document.querySelectorAll(selector).forEach(function (element) {
-        element.setAttribute('data-threeui-hidden', '');
-        element.setAttribute('aria-hidden', 'true');
-        if ('inert' in element) element.inert = true;
-      });
-    });
-    specs.forEach(function (spec) {
-      var element = document.querySelector(spec.selector);
-      if (!element) return;
-      element.setAttribute('data-threeui-role', spec.role);
-      if (!roots.some(function (root) { return root.contains(element); })) roots.push(element);
-    });
-    if (!roots.length) return;
-    isolated = true;
-    roots.forEach(function (root) {
-      var placeholderLink = root.matches('a[href="#"]') ? root : root.querySelector('a[href="#"]');
-      if (placeholderLink) placeholderLink.addEventListener('click', function (event) { event.preventDefault(); });
-      document.body.appendChild(root);
-    });
-    Array.from(document.body.children).forEach(function (element) {
-      if (roots.indexOf(element) !== -1) return;
-      element.setAttribute('data-threeui-residual', '');
-      element.setAttribute('aria-hidden', 'true');
-      if ('inert' in element) element.inert = true;
-    });
-    document.body.setAttribute('data-threeui-ready', '');
-    requestAnimationFrame(function () { window.dispatchEvent(new Event('resize')); });
+function rotateParticle(particle: Particle, time: number) {
+  const yaw = time * 0.105;
+  const cosYaw = Math.cos(yaw);
+  const sinYaw = Math.sin(yaw);
+  const x1 = particle.x * cosYaw - particle.z * sinYaw;
+  const z1 = particle.x * sinYaw + particle.z * cosYaw;
+  const tilt = -0.22;
+  const cosTilt = Math.cos(tilt);
+  const sinTilt = Math.sin(tilt);
+  return {
+    x: x1,
+    y: particle.y * cosTilt - z1 * sinTilt,
+    z: particle.y * sinTilt + z1 * cosTilt,
+  };
+}
+
+function erosionStrength(x: number, y: number, z: number, time: number, seed: number) {
+  const ribbon =
+    Math.sin(x * 7.2 + y * 3.1 + time * 0.7) +
+    Math.sin(y * 9.4 - z * 4.3 - time * 0.42) +
+    Math.sin((x + z) * 11.1 + time * 0.28);
+  const pulse = 0.78 + Math.sin(time * 1.1 + seed * 12) * 0.22;
+  return Math.max(0, (ribbon - 1.28) / 1.55) * pulse;
+}
+
+function drawFrame(
+  canvas: HTMLCanvasElement,
+  context: CanvasRenderingContext2D,
+  particles: readonly Particle[],
+  time: number,
+  mode: EffectMode,
+) {
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const pixelWidth = Math.round(width * dpr);
+  const pixelHeight = Math.round(height * dpr);
+  if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+    canvas.width = pixelWidth;
+    canvas.height = pixelHeight;
   }
-  function scheduleIsolation() { setTimeout(isolate, 100); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scheduleIsolation, { once: true });
-  else scheduleIsolation();
-  window.addEventListener('load', isolate, { once: true });
-})();
-</script>`;
-  return source
-    .replace(/<\/head>/i, `${focusStyle}</head>`)
-    .replace(/<\/body>/i, `${focusScript}</body>`);
+
+  context.setTransform(dpr, 0, 0, dpr, 0, 0);
+  context.fillStyle = mode === "dark" ? "#050403" : "#f4f3f1";
+  context.fillRect(0, 0, width, height);
+
+  const scale = Math.min(width, height) * 0.42;
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const points = particles
+    .map((particle) => ({ particle, rotated: rotateParticle(particle, time) }))
+    .sort((a, b) => a.rotated.z - b.rotated.z);
+
+  for (const { particle, rotated } of points) {
+    const depth = (rotated.z + 1) / 2;
+    const perspective = 0.9 + depth * 0.13;
+    const x = centerX + rotated.x * scale * perspective;
+    const y = centerY + rotated.y * scale * perspective;
+    const erosion = erosionStrength(rotated.x, rotated.y, rotated.z, time, particle.seed);
+    const flicker = 0.72 + Math.sin(time * 2.4 + particle.seed * 31) * 0.28;
+    const hot = erosion > 0.2;
+
+    context.beginPath();
+    context.arc(x, y, hot ? 1.4 + erosion * 2.8 : 0.82 + depth * 0.54, 0, Math.PI * 2);
+    if (mode === "dark") {
+      const alpha = hot
+        ? Math.min(0.98, (0.42 + erosion * 0.74) * flicker)
+        : (0.3 + depth * 0.5) * (0.78 + particle.seed * 0.22);
+      const lightness = hot ? 54 + erosion * 30 : 42 + depth * 10;
+      context.fillStyle = `hsla(${hot ? 36 + erosion * 8 : 22 + particle.seed * 14}, 96%, ${lightness}%, ${alpha})`;
+      context.shadowColor = hot ? "rgba(255, 174, 62, 0.9)" : "rgba(221, 74, 10, 0.26)";
+      context.shadowBlur = hot ? 10 + erosion * 20 : 2.5;
+    } else {
+      context.fillStyle = `rgba(109, 42, 59, ${0.2 + depth * 0.62})`;
+      context.shadowColor = "transparent";
+      context.shadowBlur = 0;
+    }
+    context.fill();
+  }
+
+  context.shadowBlur = 0;
+  const vignette = context.createRadialGradient(
+    centerX,
+    centerY,
+    scale * 0.28,
+    centerX,
+    centerY,
+    Math.max(width, height) * 0.7,
+  );
+  vignette.addColorStop(0, "rgba(0, 0, 0, 0)");
+  vignette.addColorStop(1, mode === "dark" ? "rgba(0, 0, 0, 0.64)" : "rgba(255, 255, 255, 0.1)");
+  context.fillStyle = vignette;
+  context.fillRect(0, 0, width, height);
 }
 
-function RecursiveErosionBackground({
+export default function RecursiveErosionBackground({
   mode = RECURSIVE_EROSION_DEFAULTS.mode,
   hue = RECURSIVE_EROSION_DEFAULTS.hue,
   saturation = RECURSIVE_EROSION_DEFAULTS.saturation,
@@ -141,39 +145,57 @@ function RecursiveErosionBackground({
   className,
   style,
 }: RecursiveErosionBackgroundProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const particles = useMemo(() => buildSphere(), []);
   const safeMode: EffectMode = mode === "light" ? "light" : "dark";
-  const background = effectBackground(RECURSIVE_EROSION_EFFECT, safeMode);
-  const source = useMemo(
-    () => buildFocusedDocument(RECURSIVE_EROSION_EFFECT, safeMode),
-    [safeMode],
-  );
-  const safeHue = clamp(hue, -180, 180);
-  const safeSaturation = clamp(saturation, 0, 2);
-  const safeBrightness = clamp(brightness, 0.35, 1.65);
-  const filter =
-    safeHue === 0 && safeSaturation === 1 && safeBrightness === 1
-      ? undefined
-      : `hue-rotate(${safeHue}deg) saturate(${safeSaturation}) brightness(${safeBrightness})`;
+  const filter = `hue-rotate(${clamp(hue, -180, 180)}deg) saturate(${clamp(saturation, 0, 2)}) brightness(${clamp(brightness, 0.35, 1.65)})`;
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    if (!canvas || !context) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let animationFrame = 0;
+    let startTime = performance.now();
+
+    const render = (now: number) => {
+      const time = reducedMotion.matches ? 5.5 : (now - startTime) / 1000;
+      drawFrame(canvas, context, particles, time, safeMode);
+      if (!reducedMotion.matches) animationFrame = requestAnimationFrame(render);
+    };
+    const restart = () => {
+      cancelAnimationFrame(animationFrame);
+      startTime = performance.now();
+      animationFrame = requestAnimationFrame(render);
+    };
+
+    const resizeObserver = new ResizeObserver(restart);
+    resizeObserver.observe(canvas);
+    reducedMotion.addEventListener("change", restart);
+    restart();
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      resizeObserver.disconnect();
+      reducedMotion.removeEventListener("change", restart);
+    };
+  }, [particles, safeMode]);
 
   return (
-    <iframe
+    <canvas
+      ref={canvasRef}
       className={className}
-      data-mode={safeMode}
-      title={RECURSIVE_EROSION_EFFECT.title}
-      srcDoc={source}
-      sandbox="allow-scripts"
-      loading="eager"
+      role="img"
+      aria-label="A slowly rotating sphere formed from glowing amber particles."
       style={{
         display: "block",
         width: "100%",
         height: "100%",
-        border: 0,
-        background,
+        background: safeMode === "dark" ? "#050403" : "#f4f3f1",
         filter,
         ...style,
       }}
     />
   );
 }
-
-export default RecursiveErosionBackground;
