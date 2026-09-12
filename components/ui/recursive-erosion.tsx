@@ -85,8 +85,7 @@ function drawFrame(
   }
 
   context.setTransform(dpr, 0, 0, dpr, 0, 0);
-  context.fillStyle = mode === "dark" ? "#050403" : "#f4f3f1";
-  context.fillRect(0, 0, width, height);
+  context.clearRect(0, 0, width, height);
 
   const scale = Math.min(width, height) * 0.42;
   const centerX = width / 2;
@@ -123,18 +122,6 @@ function drawFrame(
   }
 
   context.shadowBlur = 0;
-  const vignette = context.createRadialGradient(
-    centerX,
-    centerY,
-    scale * 0.28,
-    centerX,
-    centerY,
-    Math.max(width, height) * 0.7,
-  );
-  vignette.addColorStop(0, "rgba(0, 0, 0, 0)");
-  vignette.addColorStop(1, mode === "dark" ? "rgba(0, 0, 0, 0.64)" : "rgba(255, 255, 255, 0.1)");
-  context.fillStyle = vignette;
-  context.fillRect(0, 0, width, height);
 }
 
 export default function RecursiveErosionBackground({
@@ -192,7 +179,7 @@ export default function RecursiveErosionBackground({
         display: "block",
         width: "100%",
         height: "100%",
-        background: safeMode === "dark" ? "#050403" : "#f4f3f1",
+        background: "transparent",
         filter,
         ...style,
       }}
