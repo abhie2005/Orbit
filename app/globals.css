@@ -39,10 +39,14 @@
   --color-blue: #1d4ed8;
   --color-amber: #9a5b06;
   --color-green: #0f766e;
-  --color-ink: #15161a;
+  --color-ink: #221a1e;
   --color-muted: #5f5849;
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Licensed faces are named FIRST; the fallbacks carry the design until the
+     files land in app/fonts/. See app/fonts/README.md. */
+  --font-display: "Caesura", var(--font-display-fallback), Georgia, serif;
+  --font-heading: "Peristiva", var(--font-heading-fallback), Georgia, serif;
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
   /* Brutalism: nothing is rounded. Corners are square everywhere. */
@@ -59,7 +63,7 @@
   --orbit-blue: #1d4ed8;
   --orbit-amber: #9a5b06;
   --orbit-green: #0f766e;
-  --orbit-ink: #15161a;
+  --orbit-ink: #221a1e;
   --orbit-muted: #5f5849;
 
   /* Brutalist structure: heavy rules and hard, unblurred drop shadows. */
@@ -98,8 +102,8 @@ body {
   background-color: var(--orbit-bg);
   /* Flat stock plus an exposed grid. No gradients — brutalism does not blend. */
   background-image:
-    linear-gradient(to right, rgba(21, 22, 26, 0.055) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(21, 22, 26, 0.055) 1px, transparent 1px);
+    linear-gradient(to right, rgba(34, 26, 30, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(34, 26, 30, 0.06) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 
@@ -198,8 +202,6 @@ body {
 --------------------------------------------------------------------------- */
 
 @theme {
-  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
-  --font-spray: var(--font-spray), var(--font-display), sans-serif;
   --font-hand: var(--font-hand), ui-rounded, cursive;
 }
 
@@ -364,3 +366,58 @@ body {
   text-transform: uppercase;
   padding: 0.25rem 0.6rem;
 }
+
+
+/* ---------------------------------------------------------------------------
+   Type scale.
+
+   h1 and anything marked important are Caesura, always ALL CAPS and bold.
+   h2 is Peristiva — headings only, never body copy.
+   Everything else is Archivo, with Geist Mono for labels and data.
+--------------------------------------------------------------------------- */
+
+h1,
+.type-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 0.94;
+}
+
+h2,
+.type-heading {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.06;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------------------
+   Licensed fonts — uncomment once the files are in app/fonts/.
+   Nothing else needs to change: the stacks above already name them first.
+--------------------------------------------------------------------------- */
+
+/*
+@font-face {
+  font-family: "Caesura";
+  src: url("./fonts/Caesura.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Peristiva";
+  src: url("./fonts/Peristiva.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+*/

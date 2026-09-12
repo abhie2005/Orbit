@@ -167,7 +167,7 @@ function PassportFront({
               <div className="min-w-0">
                 <h2
                   id={titleId}
-                  className="font-[family-name:var(--font-spray)] text-[2.1rem] leading-[0.85] tracking-tight sm:text-[2.6rem]"
+                  className="font-[family-name:var(--font-display)] text-[2.1rem] leading-[0.85] tracking-tight sm:text-[2.6rem]"
                 >
                   ORBIT
                 </h2>

@@ -1,7 +1,7 @@
 # Orbit — Build Status
 
 **Last updated:** 2026-09-12 — session 1 (Claude Code)
-**Phase:** M7 — feature-complete; brutalist paper theme applied
+**Phase:** M7 — feature-complete; brutalist paper theme + Caesura/Peristiva type system
 **Demo runnable:** ✅ end to end, verified by script
 **Build passing:** ✅ `npm run verify`
 **Demo path passing:** ✅ `npm run check:demo` — **15/15**
@@ -103,7 +103,8 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | `app/constellation`, `components/constellation/*` | Graph, custom node/edge, legend, list view |
 | `components/missions/mission-panel.tsx` | One mission at a time, skip is free |
 | `app/professor/create`, `app/professor/dashboard`, `components/dashboard/*` | Professor side |
-| `components/ui/*` | Primitives, header, hero graphic, demo reset, word-reveal |
+| `components/ui/*` | Primitives, header (wordmark only), hero graphic, demo reset, word-reveal |
+| `app/fonts/README.md` | **How to drop in the licensed Caesura / Peristiva files** |
 
 **Scripts:**
 
@@ -114,6 +115,9 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 
 ## 6. Next up (in priority order)
 
+0. **Add the licensed font files** — `Caesura.woff2` and `Peristiva.woff2` into
+   `app/fonts/`, then uncomment the two `@font-face` blocks at the bottom of
+   `app/globals.css`. Everything else is already wired. See `app/fonts/README.md`.
 1. **Deploy to Vercel** — needs Abhi's go-ahead (it publishes a public URL).
 2. QR code on the professor create/dashboard screen (spec "nice to have") — the
    join code is displayed large already, so this is genuinely optional.
@@ -139,6 +143,9 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | Layout tuned to 130px minimum separation | Measured, not guessed — `check-logic.ts` fails the build if nodes get closer. |
 | Dev port pinned to 3210 | Port 3000 was already taken on this machine and Next silently migrated between ports mid-session. "Which port is it on?" is not a question to answer mid-demo. |
 | React Flow attribution left visible | Hiding it requires a Pro licence. Not worth it for a hackathon. |
+| **Type system: Caesura / Peristiva / Archivo** | Abhi's direction. `h1` and anything "important" is **Caesura, ALL CAPS + bold**; `h2` is **Peristiva** (headings only — never body copy); everything else is Archivo with Geist Mono for labels and data. Both display faces are **licensed and not in the repo** — see `app/fonts/README.md`. The stacks name `"Caesura"` and `"Peristiva"` FIRST, so dropping the files in and uncommenting two `@font-face` blocks activates them with no other change. Bodoni Moda and Instrument Serif carry the design until then. |
+| Ink is warm plum `#221A1E`, not black | Abhi's direction. Pure black fought the wine and the paper. `#221A1E` keeps 13.95:1 on the page and 1.66:1 against the wine fill, so ink rules stay visible on wine buttons. |
+| Logo is a wordmark, no icon | Abhi's direction. `OrbitMark` removed entirely; the header is the name set in the display face. |
 | **Brutalist visual system** | Abhi's direction. Square corners everywhere (`--radius-card: 0`), 2px ink rules instead of hairlines, hard unblurred offset shadows (`--shadow-hard`), flat fills with no gradients, an exposed 48px grid, slab section labels, and buttons that physically depress on `:active`. Utility classes `.brut`, `.brut-shadow`, `.brut-press`, `.brut-label` live in `app/globals.css`. |
 | Purple replaced by wine `#6D2A3B` | Abhi's direction. The token was **renamed** `violet` → `wine` across all 13 files rather than left as a `violet` variable holding a red — that would mislead the next agent. |
 | Avatar fills use a fixed 10-colour palette | The old continuous hue wheel produced stray purples and pastels that fought the system. `AVATAR_FILLS` in `lib/passport.ts` is a restricted on-brand set; `check:logic` asserts every fill clears 4.5:1 against its initials (worst 4.64:1) and that every seeded student lands on-palette. |
