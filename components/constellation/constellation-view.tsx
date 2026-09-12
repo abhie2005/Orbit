@@ -117,15 +117,16 @@ export function ConstellationView() {
         </div>
       </header>
 
-      {/* Filters */}
-      <div className="mt-5 flex flex-wrap items-center gap-2">
-        <span className="text-xs uppercase tracking-[0.16em] text-muted">Explore</span>
+      {/* Filters. On phones these become one horizontally scrollable row —
+          wrapping them costs five rows of height and pushes the graph off screen. */}
+      <p className="mt-5 text-xs uppercase tracking-[0.16em] text-muted">Explore</p>
+      <div className="-mx-5 mt-2 flex snap-x items-center gap-2 overflow-x-auto px-5 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
         {filterTags.map((tag) => (
           <button
             key={tag}
             onClick={() => setFilterTag(filterTag === tag ? null : tag)}
             aria-pressed={filterTag === tag}
-            className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+            className={`shrink-0 snap-start rounded-full border px-3 py-1.5 text-sm transition-colors ${
               filterTag === tag
                 ? "border-blue bg-blue/15 text-blue"
                 : "border-line bg-surface-2 text-muted hover:border-blue/50 hover:text-ink"
@@ -137,7 +138,7 @@ export function ConstellationView() {
         {filterTag ? (
           <button
             onClick={() => setFilterTag(null)}
-            className="rounded-full px-3 py-1.5 text-sm text-muted underline underline-offset-4 hover:text-ink"
+            className="shrink-0 rounded-full px-3 py-1.5 text-sm text-muted underline underline-offset-4 hover:text-ink"
           >
             Clear
           </button>

@@ -127,19 +127,25 @@ function read(): OrbitState {
     // Corrupt or unavailable storage must never break the demo.
   }
   memoryState = createSeededState();
-  write(memoryState);
+  // Persist WITHOUT notifying: `read` is the getSnapshot for
+  // useSyncExternalStore and runs during render, so notifying listeners here
+  // would be a state update during render.
+  persist(memoryState);
   return memoryState;
+}
+
+function persist(next: OrbitState): void {
+  if (!isBrowser()) return;
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  } catch {
+    // Private-mode storage failures are survivable; state stays in memory.
+  }
 }
 
 function write(next: OrbitState): void {
   memoryState = next;
-  if (isBrowser()) {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      // Private-mode storage failures are survivable; state stays in memory.
-    }
-  }
+  persist(next);
   for (const listener of listeners) listener();
 }
 
