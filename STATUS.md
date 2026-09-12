@@ -81,7 +81,7 @@ npm run check:demo   # end-to-end demo walk-through (dev server must be up)
 | File | Purpose |
 | --- | --- |
 | `lib/types.ts` | Domain types (spec §14); `MatchReason.direction` powers skill-exchange copy |
-| `lib/questions.ts` | Controlled vocabularies + 11-question bank (6 core, 5 bonus) |
+| `lib/questions.ts` | Controlled vocabularies + 12-question bank (6 core, 6 bonus, including movie and music genre prompts) |
 | `lib/privacy.ts` | The only place deciding passport-visible vs match-usable |
 | `lib/matching.ts` | `scorePair`, `buildConstellation`, `rankSuggestionsFor`, `explainReasons` |
 | `lib/grouping.ts` | `bridgeTheClass` greedy grouping + rationale strings |

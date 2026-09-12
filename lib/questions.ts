@@ -36,15 +36,16 @@ export const MOVIE_GENRES = [
   "Science Fiction",
   "Comedy",
   "Action",
-  "Documentary",
   "Animation",
-  "Anime",
-  "Horror",
-  "Thriller",
   "Drama",
-  "Fantasy",
-  "Romance",
-  "Mystery",
+] as const;
+
+export const MUSIC_GENRES = [
+  "Indie",
+  "Pop",
+  "Classical",
+  "Hip Hop",
+  "Jazz",
 ] as const;
 
 export const SPORTS = [
@@ -232,13 +233,24 @@ export const QUESTIONS: readonly Question[] = [
   },
   {
     key: "movieGenres",
-    prompt: "Which movie or show genres do you enjoy?",
-    helper: "Low stakes, high conversation value.",
+    prompt: "What movie genre do you like?",
+    helper: "Pick up to 3 genres you enjoy watching.",
     type: "chips",
     options: MOVIE_GENRES,
     usedForMatching: true,
     optional: true,
-    maxSelections: 4,
+    maxSelections: 3,
+    core: false,
+  },
+  {
+    key: "musicGenres",
+    prompt: "What music do you like?",
+    helper: "Pick up to 3 music styles you usually enjoy.",
+    type: "chips",
+    options: MUSIC_GENRES,
+    usedForMatching: true,
+    optional: true,
+    maxSelections: 3,
     core: false,
   },
   {

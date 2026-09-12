@@ -20,6 +20,7 @@ import type {
 export const EMPTY_FEATURES: StudentFeatures = {
   academicInterests: [],
   movieGenres: [],
+  musicGenres: [],
   sports: [],
   hobbies: [],
   skillsOffered: [],
@@ -59,6 +60,7 @@ export function deriveFeatures(answers: readonly ProfileAnswer[]): StudentFeatur
   return {
     academicInterests: get("academicInterests"),
     movieGenres: get("movieGenres"),
+    musicGenres: get("musicGenres"),
     sports: get("sports"),
     hobbies: get("hobbies"),
     skillsOffered: get("skillsOffered"),
@@ -98,6 +100,7 @@ export function hasCompletedPassport(answers: readonly ProfileAnswer[]): boolean
       f.skillsOffered.length +
       f.skillsWanted.length +
       f.movieGenres.length +
+      f.musicGenres.length +
       f.sports.length >
     0
   );

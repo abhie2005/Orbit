@@ -108,6 +108,7 @@ export type BelongingPulse = {
 export type StudentFeatures = {
   academicInterests: string[];
   movieGenres: string[];
+  musicGenres: string[];
   sports: string[];
   hobbies: string[];
   skillsOffered: string[];
@@ -121,6 +122,7 @@ export type QuestionKey =
   | "home"
   | "academicInterests"
   | "movieGenres"
+  | "musicGenres"
   | "sports"
   | "hobbies"
   | "skillsOffered"

@@ -9,6 +9,7 @@
  * Pure module — no React, no browser APIs.
  */
 
+import { MUSIC_GENRES } from "./questions";
 import { deriveFeatures } from "./privacy";
 import type {
   Classroom,
@@ -41,6 +42,7 @@ type SeedInput = {
   conversationStarter: string;
   academicInterests: string[];
   movieGenres: string[];
+  musicGenres?: string[];
   sports: string[];
   hobbies: string[];
   skillsOffered: string[];
@@ -475,6 +477,10 @@ function toRecord(input: SeedInput): StudentRecord {
     createdAt: DEMO_CLASSROOM.createdAt,
   };
 
+  const musicGenres = input.musicGenres?.length
+    ? input.musicGenres
+    : [MUSIC_GENRES[Math.abs(hash(input.id)) % MUSIC_GENRES.length]];
+
   const answers: ProfileAnswer[] = [
     answer(input.id, "academicInterests", input.academicInterests),
     answer(input.id, "skillsOffered", input.skillsOffered),
@@ -483,6 +489,7 @@ function toRecord(input: SeedInput): StudentRecord {
     answer(input.id, "projectRoles", [input.projectRole]),
     answer(input.id, "meetingPreference", [input.meetingPreference]),
     answer(input.id, "movieGenres", input.movieGenres),
+    answer(input.id, "musicGenres", musicGenres),
     answer(input.id, "sports", input.sports),
     answer(input.id, "languages", input.languages),
     answer(input.id, "home", [input.home]),
@@ -490,6 +497,15 @@ function toRecord(input: SeedInput): StudentRecord {
   ].filter((a) => a.values.length > 0);
 
   return { student, answers };
+}
+
+function hash(value: string): number {
+  let out = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    out = (out << 5) - out + value.charCodeAt(i);
+    out |= 0;
+  }
+  return Math.abs(out);
 }
 
 export const SEED_STUDENTS: StudentRecord[] = SEED_INPUT.map(toRecord);
